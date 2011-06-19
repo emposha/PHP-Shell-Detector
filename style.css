@@ -70,3 +70,11 @@ dl dd dl dt {
 .hidden {
   display:none;
 }
+.green {
+  font-weight: bold;
+  color: #92B901;
+}
+.red {
+  font-weight: bold;
+  color: #DD3C10;
+}

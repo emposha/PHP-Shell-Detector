@@ -10,10 +10,11 @@ class shellDetector {
   private $extension = '.php';
   private $badfiles = array();
   private $title = 'PHP Shell Detector';
-  private $showlinenumbers = true;
+  private $showlinenumbers = false;
   private $dateformat = "H:i:s d/m/Y";
   private $langauge = '';
-  
+  private $fingerprints = array('7b592b9bb69424fa2a38704915a56b4050662c4d' => 'c99 (compressed)');
+  private $task = '';
   /**
    * Constractor
    */
@@ -36,18 +37,24 @@ class shellDetector {
     $this->output($this->t('Starting file scanner'));
     $this->listdir('.');
     $this->output($this->t('File scan done we have: @count files to analize', array("@count" => count($this->files))));
-    $this->anaylize();
-    $this->fingerprint();
+    switch ($this->task) {
+      case 'getsha':
+        $this->showsha();
+        break;
+      default:
+        $this->anaylize();
+        break;
+    }
     $this->footer();
   }
   
-  /**
-   * Fingerprint suspicious files to confirm shells
-   */
-  private function fingerprint() {
-    //currently working on it
-    $this->output($this->t('Starting fingerprint to confirm shell files'));
-    
+  function showsha() {
+    foreach ($this->files as $file) {
+      $this->output('<dl><dt>'.$this->t('Show sha for file:').' '.basename($file).'<span class="plus">-</span></dt>', null, false);
+      $this->output('<dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd>', null, false);
+      $this->output('<dt>'.$this->t('Sha1:').'</dt><dd>'.sha1_file ($file).'</dd></dl></dd></dl>', null, false);
+    }
+    $this->output('', 'clearer');
   }
   
   /**
@@ -59,7 +66,14 @@ class shellDetector {
         $content = file_get_contents($file);
         if ($this->showlinenumbers) {
           $flag = false;
-          $output = '<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.$this->HumanReadableFilesize($file).'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>';
+          $output = '<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt>';
+          $output .= '<dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.' <small>(<a href="#">'.$this->t('show source').'</a>)</small></dd>';
+          $output .= '<dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd>';
+          $output .= '<dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd>';
+          $output .= '<dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd>';
+          $output .= '<dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd>';
+          $output .= '<dt>'.$this->t('Filesize:').'</dt><dd>'.$this->HumanReadableFilesize($file).'</dd>';
+          $output .= '<dt>'.$this->t('suspicious functions used:').'</dt><dd>';
           $content = explode("\n", $content);
           for ($line = 0; $line < count($content); $line++) {
             if (preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content[$line], $matches)) {
@@ -70,20 +84,39 @@ class shellDetector {
             }
           }
           if ($flag) {
+            $key = "Negative";
+            $sha1 = sha1_file($file);
+            if (key_exists($sha1, $this->fingerprints)) {
+              $key = "Positive, it`s a " . $this->fingerprints[$sha1];
+            }
+            $output .= '<dt>'.$this->t('Fingerprint:').'</dt><dd class="'.($key == 'Negative' ? 'green' : 'red').'">'.$key.'</dd>';
             $this->output($output.'</dd></dl></dd></dl>', null, false);
             $this->badfiles[] = $file;
           }
         }
         else {
           if (preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content, $matches)) {
-            $this->output('<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.$this->HumanReadableFilesize($file).'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>'.$this->_implode($matches).'</dd></dl></dd></dl>', null, false);
+            $this->output('<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt>', null, false);
+            $this->output('<dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd>', null, false);
+            $this->output('<dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd>', null, false);
+            $this->output('<dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd>', null, false);
+            $this->output('<dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd>', null, false);
+            $this->output('<dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd>', null, false);
+            $this->output('<dt>'.$this->t('Filesize:').'</dt><dd>'.$this->HumanReadableFilesize($file).'</dd>', null, false);
+            $this->output('<dt>'.$this->t('suspicious functions used:').'</dt><dd>'.$this->_implode($matches).'</dd>', null, false);
+            $key = "Negative";
+            $sha1 = sha1_file($file);
+            if (key_exists($sha1, $this->fingerprints)) {
+              $key = "Positive, it`s a " . $this->fingerprints[$sha1];
+            }
+            $this->output('<dt>'.$this->t('Fingerprint:').'</dt><dd class="'.($key == 'Negative' ? 'green' : 'red').'">'.$key.'</dd></dl></dd></dl>', null, false);
             $this->badfiles[] = $file;
           }
         }
       }
     }
     $this->output('', 'clearer');
-    $this->output($this->t('probably @count shells files found.', array("@count" => count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
+    $this->output($this->t('Suspicious @count files found. From them we found @shells shells', array("@count" => count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
   }
   
   /**
@@ -113,7 +146,7 @@ class shellDetector {
    * Output header function
    */
   private function header() {
-    $style = '<style type="text/css" media="all">body {background-color: #ccc;font: 13px tahoma, arial; color: #151515; direction: ltr;}h1{text-align:center;font-size:24px;}dl{margin:0px; padding:0px;}#content {width: 1024px;margin:0px auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px;}dl dt{cursor: pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4FCBA3!important;width:180px!important} .error{background-color: #FFEBE8;border: 1px solid #DD3C10;padding:4px 10px;margin: 5px 0px} .info{background-color:#fff9d7;border: 1px solid #e2c822;padding:4px 10px;margin: 5px 0px}.clearer{clear:both;height:0px;font-size:0px;}.hidden {display:none;}</style>';
+    $style = '<style type="text/css" media="all">body {background-color: #ccc;font: 13px tahoma, arial; color: #151515; direction: ltr;}h1{text-align:center;font-size:24px;}dl{margin:0px; padding:0px;}#content {width: 1024px;margin:0px auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px;}dl dt{cursor: pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4FCBA3!important;width:180px!important} .error{background-color: #FFEBE8;border: 1px solid #DD3C10;padding:4px 10px;margin: 5px 0px} .info{background-color:#fff9d7;border: 1px solid #e2c822;padding:4px 10px;margin: 5px 0px}.clearer{clear:both;height:0px;font-size:0px;}.hidden {display:none;}.green {font-weight: bold;color: #92B901;}.red {font-weight: bold;color: #DD3C10;}</style>';
     $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false;})}$(document).ready(init);';
     $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>'.$style.'<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">'.$script.'</script></head><body><h1>'.$this->title.'</h1><div id="content">', null, false);
   }
@@ -197,6 +230,6 @@ class shellDetector {
   }
 }
 
-$shelldetector = new shellDetector(array('test'=>'test'));
+$shelldetector = new shellDetector(array('extension'=>'.php|.txt'));
 $shelldetector->start();
 ?>
