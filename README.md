@@ -7,7 +7,7 @@ PHP Shell Detector is released under the MIT License <http://www.opensource.org/
 
 Requirements
 ------------
-PHP > 5.2
+PHP v5.x
 
 Usage
 -----

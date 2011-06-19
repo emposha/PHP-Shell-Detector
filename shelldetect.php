@@ -47,7 +47,7 @@ class shellDetector {
         $content = file_get_contents($file);
         if ($this->showlinenumbers) {
           $flag = false;
-          $output = '<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'</dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.filesize($file).' '.$this->t('bytes').'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>';
+          $output = '<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.filesize($file).' '.$this->t('bytes').'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>';
           $content = explode("\n", $content);
           for ($line = 0; $line < count($content); $line++) {
             if (preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content[$line], $matches)) {
@@ -62,7 +62,7 @@ class shellDetector {
         }
         else {
           if (preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content, $matches)) {
-            $this->output('<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'</dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.filesize($file).' '.$this->t('bytes').'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>'.$this->_implode($matches).'</dd></dl></dd></dl>', null, false);
+            $this->output('<dl><dt>'.$this->t('Suspicious behavior found in:').' '.basename($file).'<span class="plus">-</span></dt><dd><dl><dt>'.$this->t('Full path:').'</dt><dd>'.$file.'</dd><dt>'.$this->t('Owner:').'</dt><dd>'.fileowner($file).'</dd><dt>'.$this->t('Permision:').'</dt><dd>'.substr(sprintf('%o', fileperms($file)), -4).'</dd><dt>'.$this->t('Last accessed:').'</dt><dd>'.date($this->dateformat, fileatime($file)).'</dd><dt>'.$this->t('Last modified:').'</dt><dd>'.date($this->dateformat, filemtime($file)).'</dd><dt>'.$this->t('Filesize:').'</dt><dd>'.filesize($file).' '.$this->t('bytes').'</dd><dt>'.$this->t('suspicious functions used:').'</dt><dd>'.$this->_implode($matches).'</dd></dl></dd></dl>', null, false);
             $this->badfiles[] = $file;
           }
         }
@@ -90,8 +90,9 @@ class shellDetector {
   }
   
   private function header() {
-    $style = '<style type="text/css" media="all">body {background-color: #ccc;font: 13px tahoma, arial; color: #151515; direction: ltr;}h1{text-align:center;font-size:24px;}dl{margin:0px; padding:0px;}#content {width: 1024px;margin:0px auto;padding:35px 40px;border:1pxsolid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px;}dl dt{background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;left:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4FCBA3!important;width:180px!important} .error{background-color: #FFEBE8;border: 1px solid #DD3C10;padding:4px 10px;margin: 5px 0px} .info{background-color:#fff9d7;border: 1px solid #e2c822;padding:4px 10px;margin: 5px 0px}.clearer{clear:both;height:0px;font-size:0px;}</style>';
-    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>'.$style.'</head><body><h1>'.$this->title.'</h1><div id="content">', null, false);
+    $style = '<style type="text/css" media="all">body {background-color: #ccc;font: 13px tahoma, arial; color: #151515; direction: ltr;}h1{text-align:center;font-size:24px;}dl{margin:0px; padding:0px;}#content {width: 1024px;margin:0px auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px;}dl dt{cursor: pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4FCBA3!important;width:180px!important} .error{background-color: #FFEBE8;border: 1px solid #DD3C10;padding:4px 10px;margin: 5px 0px} .info{background-color:#fff9d7;border: 1px solid #e2c822;padding:4px 10px;margin: 5px 0px}.clearer{clear:both;height:0px;font-size:0px;}</style>';
+    $script = '<script type="text/javascript">function init(){$(\'dt\').click(function(){var text=$(this).children(\'.plus\');if(text.length){$(this).next(\'dd\').slideToggle();if(text.text()==\'+\'){text.text(\'-\')}else{text.text(\'+\')}}})}$(document).ready(init);</script>';
+    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>'.$style.'<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>'.$script.'</head><body><h1>'.$this->title.'</h1><div id="content">', null, false);
   }
   
   private function output($content, $class = 'info', $html = true) {
@@ -104,7 +105,6 @@ class shellDetector {
   }
   
   private function t($string, $args = array()) {
-      
     if ($this->langauge) {
       if (is_file('lang/'.$this->langauge.'.php')) {
         include('lang/'.$this->langauge.'.php');
@@ -116,7 +116,6 @@ class shellDetector {
       return $string;
     }
     else {
-      // Transform arguments before inserting them.
       foreach ($args as $key => $value) {
         switch ($key[0]) {
           case '@':
