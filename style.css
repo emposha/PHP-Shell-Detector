@@ -67,3 +67,6 @@ dl dd dl dt {
   height:0px;
   font-size: 0px;
 }
+.hidden {
+  display:none;
+}
