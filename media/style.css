@@ -78,3 +78,15 @@ dl dd dl dt {
   font-weight: bold;
   color: #DD3C10;
 }
+.green small {
+  font-weight: normal !important;
+  color: #151515 !important;
+}
+.filesfound {
+  position: relative;
+}
+.files {
+  position: absolute;
+  left:4px;
+  background-color:#FFF9D7;
+}
