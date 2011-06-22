@@ -16,5 +16,11 @@ function init() {
     $( "#"+ id).dialog({height: 440,modal: true, width: 600, title: "Source code"});
     return false;
   });
+  $(".source_submit").click(function() {
+  	var id = "for" + $(this).attr("id");
+  	$("#"+id).submit();
+  	$(this).remove();
+  	return false;
+  })
 }
 $(document).ready(init);

@@ -1,0 +1,1 @@
+$this->fingerprints = array('7b592b9bb69424fa2a38704915a56b4050662c4d' => 'c99 (compressed)', 'version' => '1.0');
