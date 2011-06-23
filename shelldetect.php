@@ -157,7 +157,7 @@ class shellDetector {
               if(preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $_content[$line], $matches)) {
                 $lineid = md5($line . $file);
                 $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . $line . '</a>);', null, false);
-                $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . $_content[$line] . '</code></div>', null, false);
+                $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
               }
             }
           } else {
@@ -169,20 +169,22 @@ class shellDetector {
       }
     }
     $this->output('', 'clearer');
-    $this->output($this->t('@count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
+    $this->output($this->t('@count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles) ? '<strong>'.count($this->badfiles).'</strong>' : count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
   }
 
   /**
    * Fingerprint function
    */
-  private function fingerprint($file, $content =null) {
+  private function fingerprint($file, $content = null) {
     $key = 'Negative <small>(if wrong <a href="#" id="m_' . md5($file) . '" class="source_submit">submit file for analize</a>)</small><form id="form_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
     $class = 'green';
-    $sha1 = sha1_file($file);
-    if(key_exists($sha1, $this->fingerprints)) {
-      $key = "Positive, it`s a " . $this->fingerprints[$sha1];
-      $class = 'red';
-      $this->badfiles[] = $file;
+    $base64_content = base64_encode($content);
+    foreach ($this->fingerprints as $fingerprint => $shell) {
+      if(preg_match("%$fingerprint%", $base64_content)) {
+        $key = "Positive, it`s a " . $shell;
+        $class = 'red';
+        $this->badfiles[] = $file;
+      }
     }
     $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
   }
