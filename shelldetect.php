@@ -6,7 +6,7 @@
  */
 
 class shellDetector {
-  private $extension = '.php';
+  private $extension = array('php');
   //settings: extensions that should be scanned
   private $showlinenumbers = true;
   //settings: show line number where suspicious function used
@@ -78,13 +78,19 @@ class shellDetector {
       $this->flush();
     }
   }
-
+  
+  /**
+   * Update function get lates update
+   */
   private function update() {
     if($this->version()) {
-
+      //update mechanism
     }
   }
-
+  
+  /**
+   * Check version function
+   */
   private function version() {
     $version = isset($this->fingerprints['version']) ? $this->fingerprints['version'] : 0;
     $server_version = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=check&version=' . $version);
@@ -96,7 +102,10 @@ class shellDetector {
     }
     return false;
   }
-
+  
+  /**
+   * Scan function executer
+   */
   private function filescan() {
     $this->output($this->t('Starting file scanner, please be patient file scanning can take some time.'));
     $this->output('<div class="info">' . $this->t('Files found:') . '<span class="filesfound">', null, false);
@@ -108,6 +117,9 @@ class shellDetector {
     $this->output($this->t('File scan done we have: @count files to analize', array("@count" => count($this->files))));
   }
 
+  /**
+   * Show sha1 for fond files
+   */
   private function showsha() {
     foreach($this->files as $file) {
       $this->output('<dl><dt>' . $this->t('Show sha for file:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
@@ -127,7 +139,8 @@ class shellDetector {
       if ($self == $file) {
         unset($file);
       }
-      if(preg_match('#' . addslashes($this->extension) . '#', $file)) {
+      $extension = pathinfo($file);
+      if(in_array($extension['extension'], $this->extension)) {
         $content = file_get_contents($file);
         if(preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content, $matches)) {
           $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
@@ -159,6 +172,9 @@ class shellDetector {
     $this->output($this->t('@count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
   }
 
+  /**
+   * Fingerprint function
+   */
   private function fingerprint($file, $content =null) {
     $key = 'Negative <small>(if wrong <a href="#" id="m_' . md5($file) . '" class="source_submit">submit file for analize</a>)</small><form id="form_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
     $class = 'green';
@@ -295,6 +311,9 @@ class shellDetector {
     return round($size, 2) . ' ' . $units[$i];
   }
 
+  /**
+   * Own error handler
+   */
   public function error_handler($errno, $errstr, $errfile, $errline) {
     switch ($errno) {
       case E_USER_ERROR :
@@ -309,6 +328,6 @@ class shellDetector {
 
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
-$shelldetector = new shellDetector( array('extension' => '.php|.txt'));
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
 $shelldetector->start();
 ?>
