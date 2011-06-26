@@ -54,13 +54,19 @@ dl dd dl dt {
   background-color:#FFEBE8;
   border:1px solid #DD3C10;
   padding:4px 10px;
-  margin:5px 0px
+  margin:5px 0px;
+}
+.success {
+  background-color:#fff;
+  border:1px solid #bdc7d8;
+  padding:4px 10px;
+  margin:5px 0px;
 }
 .info {
   background-color:#fff9d7;
   border:1px solid #e2c822;
   padding:4px 10px;
-  margin:5px 0px
+  margin:5px 0px;
 }
 .clearer {
   clear:both;

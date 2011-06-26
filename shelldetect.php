@@ -84,7 +84,17 @@ class shellDetector {
    */
   private function update() {
     if($this->version()) {
-      //update mechanism
+      $content = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest');
+      chmod('fingerprint.db', 0777);
+      if (file_put_contents('fingerprint.db', $content)) {
+        $this->output($this->t('Database updated succesfully!'));
+      }
+      else {
+        $this->output($this->t('Cant save fingerprint database please check permissions'), 'error');
+      }
+    }
+    else {
+      $this->output($this->t('Your database already updated!'));
     }
   }
   
@@ -93,11 +103,11 @@ class shellDetector {
    */
   private function version() {
     $version = isset($this->fingerprints['version']) ? $this->fingerprints['version'] : 0;
-    $server_version = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=check&version=' . $version);
-    if(strlen($server_version) != 0 && strcmp($server_version, $version) != 0) {
+    $server_version = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=checkver');
+    if(strlen($server_version) != 0 && intval($server_version) != 0 && (intval($server_version) >  intval($version))) {
       $this->output($this->t('New version found. Please update!'));
       return true;
-    } else if(strlen($server_version) == 0) {
+    } else if(strlen($server_version) == 0 || intval($server_version) == 0) {
       $this->output($this->t('Cant connect to server! New version check failed!'), 'error');
     }
     return false;
@@ -169,14 +179,14 @@ class shellDetector {
       }
     }
     $this->output('', 'clearer');
-    $this->output($this->t('@count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles) ? '<strong>'.count($this->badfiles).'</strong>' : count($this->badfiles))), (count($this->badfiles) ? 'error' : null));
+    $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles) ? '<strong>'.count($this->badfiles).'</strong>' : count($this->badfiles))), (count($this->badfiles) ? 'error' : 'success'));
   }
 
   /**
    * Fingerprint function
    */
   private function fingerprint($file, $content = null) {
-    $key = 'Negative <small>(if wrong <a href="#" id="m_' . md5($file) . '" class="source_submit">submit file for analize</a>)</small><form id="form_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+    $key = 'Negative <small>(if wrong <a href="#" id="m_' . md5($file) . '" class="source_submit">submit file for analize</a>)</small><form id="form_' . md5($file) . '" target="frame_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form><iframe name="frame_' . md5($file) . '"></iframe>';
     $class = 'green';
     $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
@@ -215,7 +225,7 @@ class shellDetector {
    * Output header function
    */
   private function header() {
-    $style = '<style type="text/css" media="all">body {background-color: #ccc;font: 13px tahoma, arial; color: #151515; direction: ltr;}h1{text-align:center;font-size:24px;}dl{margin:0px; padding:0px;}#content {width: 1024px;margin:0px auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px;}dl dt{cursor: pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4FCBA3!important;width:180px!important} .error{background-color: #FFEBE8;border: 1px solid #DD3C10;padding:4px 10px;margin: 5px 0px} .info{background-color:#fff9d7;border: 1px solid #e2c822;padding:4px 10px;margin: 5px 0px}.clearer{clear:both;height:0px;font-size:0px;}.hidden {display:none;}.green {font-weight: bold;color: #92B901;}.red {font-weight: bold;color: #DD3C10;}.green small {font-weight: normal !important;color: #151515 !important;}.filesfound {position: relative;}.files {position: absolute;background-color:#FFF9D7;left:4px;}</style>';
+    $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.green small{font-weight:400!important;color:#151515!important}.filesfound{position:relative}.files{position:absolute;left:4px;background-color:#fff9d7}</style>';
     $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").click(function(){var id="for"+$(this).attr("id");$("#"+id).submit();$(this).remove();return false})}$(document).ready(init);';
     $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->title . '</h1><div id="content">', null, false);
   }
