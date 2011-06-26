@@ -6,34 +6,21 @@
  */
 
 class shellDetector {
-  private $extension = array('php');
-  //settings: extensions that should be scanned
-  private $showlinenumbers = true;
-  //settings: show line number where suspicious function used
-  private $dateformat = "H:i:s d/m/Y";
-  //settings: used with access time & modified time
-  private $langauge = '';
-  //settings: if I want to use other language
-  private $directory = '.';
-  //settings: scan specific directory
-  private $task = '';
-  //settings: perform different task
-  private $report_format = 'shelldetector_%h%i%d%m%Y.html';
-  //settings: used with is_cron(true) file format for report file
-  private $is_cron = false;
-  //settings: if true run like a cron(no output)
-  private $filelimit = 30000;
-  //settings: maximum files to scan (more then 30000 you should scan specific directory)
-
+  private $extension = array('php'); //settings: extensions that should be scanned
+  private $showlinenumbers = true; //settings: show line number where suspicious function used
+  private $dateformat = "H:i:s d/m/Y"; //settings: used with access time & modified time
+  private $langauge = ''; //settings: if I want to use other language
+  private $directory = '.'; //settings: scan specific directory
+  private $task = ''; //settings: perform different task
+  private $report_format = 'shelldetector_%h%i%d%m%Y.html'; //settings: used with is_cron(true) file format for report file
+  private $is_cron = false; //settings: if true run like a cron(no output)
+  private $filelimit = 30000; //settings: maximum files to scan (more then 30000 you should scan specific directory)
+  
   //system variables
-  private $output = '';
-  //system variable used with is_cron
-  private $files = array();
-  //system variable hold all scanned files
-  private $badfiles = array();
-  //system variable hold bad files
-  private $fingerprints = array();
-  //system: currently on dev
+  private $output = ''; //system variable used with is_cron
+  private $files = array(); //system variable hold all scanned files
+  private $badfiles = array(); //system variable hold bad files
+  private $fingerprints = array(); //system: currently on dev
   private $title = 'PHP Shell Detector';
   //system: title
 
