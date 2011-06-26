@@ -19,7 +19,8 @@ function init() {
   $(".source_submit").click(function() {
   	var id = "for" + $(this).attr("id");
   	$("#"+id).submit();
-  	$(this).remove();
+  	$(this).parent().remove();
+    $("#i"+id).removeClass("hidden");
   	return false;
   })
 }

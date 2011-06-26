@@ -96,3 +96,7 @@ dl dd dl dt {
   left:4px;
   background-color:#FFF9D7;
 }
+iframe {
+  border:0px;
+  height: 14px;
+}
