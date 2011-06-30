@@ -5,12 +5,12 @@
  * https://github.com/emposha/PHP-Shell-Detector
  */
 
-//no timout
+//no timeout
 set_time_limit(0);
 
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
-$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
+$shelldetector = new shellDetector(array('langauge' => 'russian', 'extension' => array('php', 'txt')));
 $shelldetector->start();
 
 class shellDetector {
@@ -33,7 +33,7 @@ class shellDetector {
   //system: title
 
   /**
-   * Constractor
+   * Constructor
    */
   function __construct($settings =null) {
     if(is_array($settings)) {
@@ -113,7 +113,7 @@ class shellDetector {
    */
   private function filescan() {
     $this->output($this->t('Starting file scanner, please be patient file scanning can take some time.'));
-    $this->output($this->t('Number of known shells in database is: '. (count($this->fingerprints) - 1)));
+    $this->output($this->t('Number of known shells in database is: '). (count($this->fingerprints) - 1));
     $this->output('<div class="info">' . $this->t('Files found:') . '<span class="filesfound">', null, false);
     $this->listdir($this->directory);
     $this->output('</span></div>', null, false);
@@ -124,7 +124,7 @@ class shellDetector {
   }
 
   /**
-   * Show sha1 for fond files
+   * Show sha1 for found files
    */
   private function showsha() {
     foreach($this->files as $file) {
@@ -152,7 +152,7 @@ class shellDetector {
           $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
           $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
           $this->output('<dt>' . $this->t('Owner:') . '</dt><dd>' . fileowner($file) . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Permision:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
+          $this->output('<dt>' . $this->t('Permission:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
           $this->output('<dt>' . $this->t('Last accessed:') . '</dt><dd>' . date($this->dateformat, fileatime($file)) . '</dd>', null, false);
           $this->output('<dt>' . $this->t('Last modified:') . '</dt><dd>' . date($this->dateformat, filemtime($file)) . '</dd>', null, false);
           $this->output('<dt>' . $this->t('Filesize:') . '</dt><dd>' . $this->HumanReadableFilesize($file) . '</dd>', null, false);
@@ -183,12 +183,12 @@ class shellDetector {
    * Fingerprint function
    */
   private function fingerprint($file, $content = null) {
-    $key = 'Negative <small class="source_submit_parent">(if wrong <a href="#" id="m_' . md5($file) . '" class="source_submit">submit file for analize</a>)</small><iframe class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe><form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+    $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small><iframe class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe><form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
     $class = 'green';
     $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
       if(preg_match("/".preg_quote($fingerprint, '/')."/i", $base64_content)) {
-        $key = "Positive, it`s a " . $shell;
+        $key = $this->t('Positive, it`s a ') . $shell;
         $class = 'red';
         $this->badfiles[] = $file;
         break;
@@ -198,7 +198,7 @@ class shellDetector {
   }
 
   /**
-   * Recurcevly implode array
+   * Recursively implode array
    */
   private function _implode($array, $glue =', ') {
     $temp = array();
@@ -248,6 +248,9 @@ class shellDetector {
     }
   }
 
+  /**
+   * Save scanned data to file
+   */
   private function flush() {
     $filename = date($this->report_format, time());
     file_put_contents($filename, $this->output);
@@ -260,7 +263,9 @@ class shellDetector {
     if($this->langauge) {
       if(is_file('lang/' . $this->langauge . '.php')) {
         include ('lang/' . $this->langauge . '.php');
-        $string = $local[$string];
+        if (isset($local[$string])) {
+          $string = $local[$string];
+        }
       }
     }
 
@@ -274,7 +279,7 @@ class shellDetector {
             break;
         }
       }
-      return   strtr($string, $args);
+      return strtr($string, $args);
     }
   }
 

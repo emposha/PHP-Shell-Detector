@@ -1,8 +1,10 @@
 PHP Shell Detector
 ==================
-PHP Shell Detector - is php script that help to detect or find any php shells.
+PHP Shell Detector - is php script that help to find and identify php shells. With a database of known shells all process of shell scanning is very easy. PHP Shell Detector have very friendly interface. 
 
 PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+
+PHP Shell Detector sponsored by http://www.websecure.co.il
 
 Requirements
 ------------
@@ -16,7 +18,7 @@ To activate PHP Shell Detector:
 
 2) Open this file in your browser
 
-  http://www.website.com/shelldetect.php
+    Example: http://www.website.com/shelldetect.php
 
 3) Inspect all strange files, if some of files look suspicious, send them to us. If this file is a shell we will insert this file to our fingerprint database
 
