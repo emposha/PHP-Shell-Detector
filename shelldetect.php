@@ -1,9 +1,17 @@
 <?php
 /**
- * PHP Shell Detector v1.0
+ * PHP Shell Detector v1.1
  * PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
+
+//no timout
+set_time_limit(0);
+
+//own error handler
+set_error_handler( array("shellDetector", "error_handler"));
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
+$shelldetector->start();
 
 class shellDetector {
   private $extension = array('php'); //settings: extensions that should be scanned
@@ -152,14 +160,15 @@ class shellDetector {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
             $_content = explode("\n", $content);
             for($line = 0; $line < count($_content); $line++) {
-              if(preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $_content[$line], $matches)) {
+              if(preg_match_all('%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%', $_content[$line], $matches)) {
                 $lineid = md5($line . $file);
                 $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . $line . '</a>);', null, false);
                 $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
               }
             }
+            $this->output('&nbsp;</dd>', null, false);
           } else {
-            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '</dd>', null, false);
+            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
           }
           $counter++;
           $this->fingerprint($file, $content);
@@ -178,7 +187,7 @@ class shellDetector {
     $class = 'green';
     $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
-      if(preg_match("%$fingerprint%", $base64_content)) {
+      if(preg_match("/".preg_quote($fingerprint, '/')."/i", $base64_content)) {
         $key = "Positive, it`s a " . $shell;
         $class = 'red';
         $this->badfiles[] = $file;
@@ -326,9 +335,4 @@ class shellDetector {
   }
 
 }
-
-//own error handler
-set_error_handler( array("shellDetector", "error_handler"));
-$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
-$shelldetector->start();
 ?>
