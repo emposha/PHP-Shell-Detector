@@ -26,27 +26,20 @@ To activate PHP Shell Detector:
 
 Options
 -------
-extension - extensions that should be scanned
-
-showlinenumbers - show line number where suspicious function used
-
-dateformat - used with access time & modified time
-
-langauge - if I want to use other language
-
-directory - scan specific directory
-
-task - perform different task
-
-report_format - used with is_cron(true) file format for report file
-
-is_cron - if true run like a cron(no output)
-
-filelimit - maximum files to scan (more then 30000 you should scan specific directory)
+ - extension - extensions that should be scanned
+ - showlinenumbers - show line number where suspicious function used
+ - dateformat - used with access time & modified time
+ - langauge - if I want to use other language
+ - directory - scan specific directory
+ - task - perform different task
+ - report_format - used with is_cron(true) file format for report file
+ - is_cron - if true run like a cron(no output)
+ - filelimit - maximum files to scan (more then 30000 you should scan specific directory)
 
 
 Changelog
 ---------
+ - 1.2 encryption function added, authentication added, some small bugs fixed
 
  - 1.1 fingerprint function change
        show line regex changed

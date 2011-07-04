@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP Shell Detector v1.1
+ * PHP Shell Detector v1.2
  * PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -10,7 +10,7 @@ set_time_limit(0);
 
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
-$shelldetector = new shellDetector(array('langauge' => 'russian', 'extension' => array('php', 'txt')));
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
 $shelldetector->start();
 
 class shellDetector {
@@ -19,18 +19,23 @@ class shellDetector {
   private $dateformat = "H:i:s d/m/Y"; //settings: used with access time & modified time
   private $langauge = ''; //settings: if I want to use other language
   private $directory = '.'; //settings: scan specific directory
+  private $scan_hidden = true; //settings: scan hidden files & directories
   private $task = ''; //settings: perform different task
   private $report_format = 'shelldetector_%h%i%d%m%Y.html'; //settings: used with is_cron(true) file format for report file
   private $is_cron = false; //settings: if true run like a cron(no output)
   private $filelimit = 30000; //settings: maximum files to scan (more then 30000 you should scan specific directory)
+  private $useget = false; //settings: activate task by get
+  private $authentication = array("username" => "admin", "password" => "protect"); //settings: protect script with user & password in case to disable simply set to NULL
   
   //system variables
   private $output = ''; //system variable used with is_cron
   private $files = array(); //system variable hold all scanned files
   private $badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: currently on dev
-  private $title = 'PHP Shell Detector';
-  //system: title
+  private $title = 'PHP Shell Detector'; //system: title
+  private $version = '1.1'; //system: version of shell detector
+  private $regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
+  private $public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
 
   /**
    * Constructor
@@ -44,6 +49,20 @@ class shellDetector {
         }
       }
     }
+    
+    if ($this->authentication != null) {
+      if ((!isset($_SERVER['PHP_AUTH_USER']) || (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] != $this->authentication['username'])) && (!isset($_SERVER['PHP_AUTH_PW']) ||(isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_PW'] != $this->authentication['password']))) {
+        header('WWW-Authenticate: Basic realm="Login"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo 'Please login to continue.';
+        exit;
+      }
+    }
+    
+    if ($this->useget && isset($_GET['task'])) {
+      $this->task = $_GET['task'];
+    }
+    
     if(file_exists('fingerprint.db')) {
       eval(base64_decode(file_get_contents('fingerprint.db')));
     }
@@ -54,6 +73,9 @@ class shellDetector {
    */
   public function start() {
     $this->header();
+    if (!function_exists('openssl_public_encrypt')) {
+      $this->output($this->t('Please note <strong>openssl</strong> library not found, suspicious files will be included in html without encryption.'), 'error');
+    }
     switch ($this->task) {
       case 'getsha' :
         $this->filescan();
@@ -113,7 +135,7 @@ class shellDetector {
    */
   private function filescan() {
     $this->output($this->t('Starting file scanner, please be patient file scanning can take some time.'));
-    $this->output($this->t('Number of known shells in database is: '). (count($this->fingerprints) - 1));
+    $this->output($this->t('Number of known shells in database is: '). (count($this->fingerprints)));
     $this->output('<div class="info">' . $this->t('Files found:') . '<span class="filesfound">', null, false);
     $this->listdir($this->directory);
     $this->output('</span></div>', null, false);
@@ -147,22 +169,18 @@ class shellDetector {
       }
       $extension = pathinfo($file);
       if(in_array($extension['extension'], $this->extension)) {
+        $flag = false;
         $content = file_get_contents($file);
-        if(preg_match_all('%(passthru|shell_exec|exec|base64_decode|eval|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source)%', $content, $matches)) {
-          $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
-          $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Owner:') . '</dt><dd>' . fileowner($file) . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Permission:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Last accessed:') . '</dt><dd>' . date($this->dateformat, fileatime($file)) . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Last modified:') . '</dt><dd>' . date($this->dateformat, filemtime($file)) . '</dd>', null, false);
-          $this->output('<dt>' . $this->t('Filesize:') . '</dt><dd>' . $this->HumanReadableFilesize($file) . '</dd>', null, false);
+        if(preg_match_all($this->regex, $content, $matches)) {
+          $flag = true;
+          $this->fileInfo($file);
           if($this->showlinenumbers) {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
             $_content = explode("\n", $content);
             for($line = 0; $line < count($_content); $line++) {
-              if(preg_match_all('%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%', $_content[$line], $matches)) {
+              if(preg_match_all($this->regex, $_content[$line], $matches)) {
                 $lineid = md5($line . $file);
-                $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . $line . '</a>);', null, false);
+                $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
                 $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
               }
             }
@@ -171,30 +189,56 @@ class shellDetector {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
           }
           $counter++;
-          $this->fingerprint($file, $content);
         }
+        $this->fingerprint($file, $content, $flag);
       }
     }
     $this->output('', 'clearer');
     $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles) ? '<strong>'.count($this->badfiles).'</strong>' : count($this->badfiles))), (count($this->badfiles) ? 'error' : 'success'));
   }
 
+  private function fileInfo($file) {
+    $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
+    $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('Owner:') . '</dt><dd>' . fileowner($file) . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('Permission:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('Last accessed:') . '</dt><dd>' . date($this->dateformat, fileatime($file)) . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('Last modified:') . '</dt><dd>' . date($this->dateformat, filemtime($file)) . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('Filesize:') . '</dt><dd>' . $this->HumanReadableFilesize($file) . '</dd>', null, false);
+  }
+
   /**
    * Fingerprint function
    */
-  private function fingerprint($file, $content = null) {
-    $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small><iframe class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe><form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post"><input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+  private function fingerprint($file, $content = null, $flag = false) {
+    $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small>';
+    $key .= '<iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
+    $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post">';
+    if (function_exists('openssl_public_encrypt')) {
+      if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->public_key))) {
+        $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
+      } else {
+        $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+      }
+    } else {
+      $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+    }
     $class = 'green';
     $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
-      if(preg_match("/".preg_quote($fingerprint, '/')."/i", $base64_content)) {
+      if(preg_match("/".preg_quote($fingerprint, '/')."/", $base64_content)) {
         $key = $this->t('Positive, it`s a ') . $shell;
         $class = 'red';
         $this->badfiles[] = $file;
         break;
       }
     }
-    $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
+    if ($flag) {
+      $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
+    } else if ($class == 'red') {
+      $this->fileInfo($file);
+      $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
+    }
   }
 
   /**
@@ -300,9 +344,13 @@ class shellDetector {
         continue ;
       }
       if(is_file($filepath)) {
-        $this->files[] = $filepath;
+        if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
+          $this->files[] = $filepath;
+        }
       } else if(is_dir($filepath)) {
-        $this->listdir($filepath);
+        if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
+          $this->listdir($filepath);
+        }
       }
     }
     $this->output('<span class="files">' . count($this->files) . '</span>', null, false);
