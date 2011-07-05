@@ -28,14 +28,14 @@ class shellDetector {
   private $authentication = array("username" => "admin", "password" => "protect"); //settings: protect script with user & password in case to disable simply set to NULL
   
   //system variables
-  private $output = ''; //system variable used with is_cron
-  private $files = array(); //system variable hold all scanned files
-  private $badfiles = array(); //system variable hold bad files
+  private $_output = ''; //system variable used with is_cron
+  private $_files = array(); //system variable hold all scanned files
+  private $_badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: currently on dev
-  private $title = 'PHP Shell Detector'; //system: title
-  private $version = '1.1'; //system: version of shell detector
-  private $regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
-  private $public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
+  private $_title = 'PHP Shell Detector'; //system: title
+  private $_version = '1.2'; //system: version of shell detector
+  private $_regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
+  private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
 
   /**
    * Constructor
@@ -44,7 +44,7 @@ class shellDetector {
     if(is_array($settings)) {
       $own = get_object_vars($this);
       foreach($settings as $key => $value) {
-        if(key_exists($key, $own)) {
+        if(key_exists($key, $own) && substr($key,0, 1) != '_') {
           $this->$key = $value;
         }
       }
@@ -139,17 +139,17 @@ class shellDetector {
     $this->output('<div class="info">' . $this->t('Files found:') . '<span class="filesfound">', null, false);
     $this->listdir($this->directory);
     $this->output('</span></div>', null, false);
-    if(count($this->files) > $this->filelimit) {
+    if(count($this->_files) > $this->filelimit) {
       $this->output($this->t('File limit reached, scanning process stopped.'));
     }
-    $this->output($this->t('File scan done we have: @count files to analize', array("@count" => count($this->files))));
+    $this->output($this->t('File scan done we have: @count files to analize', array("@count" => count($this->_files))));
   }
 
   /**
    * Show sha1 for found files
    */
   private function showsha() {
-    foreach($this->files as $file) {
+    foreach($this->_files as $file) {
       $this->output('<dl><dt>' . $this->t('Show sha for file:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
       $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
       $this->output('<dt>' . $this->t('Sha1:') . '</dt><dd>' . sha1_file($file) . '</dd></dl></dd></dl>', null, false);
@@ -163,7 +163,7 @@ class shellDetector {
   private function anaylize() {
     $counter = 0;
     $self = basename(__FILE__);
-    foreach($this->files as $file) {
+    foreach($this->_files as $file) {
       if ($self == $file) {
         unset($file);
       }
@@ -171,14 +171,14 @@ class shellDetector {
       if(in_array($extension['extension'], $this->extension)) {
         $flag = false;
         $content = file_get_contents($file);
-        if(preg_match_all($this->regex, $content, $matches)) {
+        if(preg_match_all($this->_regex, $content, $matches)) {
           $flag = true;
           $this->fileInfo($file);
           if($this->showlinenumbers) {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
             $_content = explode("\n", $content);
             for($line = 0; $line < count($_content); $line++) {
-              if(preg_match_all($this->regex, $_content[$line], $matches)) {
+              if(preg_match_all($this->_regex, $_content[$line], $matches)) {
                 $lineid = md5($line . $file);
                 $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
                 $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
@@ -194,7 +194,7 @@ class shellDetector {
       }
     }
     $this->output('', 'clearer');
-    $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->badfiles) ? '<strong>'.count($this->badfiles).'</strong>' : count($this->badfiles))), (count($this->badfiles) ? 'error' : 'success'));
+    $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->_badfiles) ? '<strong>'.count($this->_badfiles).'</strong>' : count($this->badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
   private function fileInfo($file) {
@@ -215,7 +215,7 @@ class shellDetector {
     $key .= '<iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
     $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post">';
     if (function_exists('openssl_public_encrypt')) {
-      if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->public_key))) {
+      if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
         $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
       } else {
         $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
@@ -229,7 +229,7 @@ class shellDetector {
       if(preg_match("/".preg_quote($fingerprint, '/')."/", $base64_content)) {
         $key = $this->t('Positive, it`s a ') . $shell;
         $class = 'red';
-        $this->badfiles[] = $file;
+        $this->_badfiles[] = $file;
         break;
       }
     }
@@ -269,7 +269,7 @@ class shellDetector {
   private function header() {
     $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.green small{font-weight:400!important;color:#151515!important}.filesfound{position:relative}.files{position:absolute;left:4px;background-color:#fff9d7}iframe{border:0px;height:14px}</style>';
     $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").click(function(){var id="for"+$(this).attr("id");$("#"+id).submit();$(this).parent().remove();console.log(id);$("#i"+id).removeClass("hidden");return false})}$(document).ready(init);';
-    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->title . '</h1><div id="content">', null, false);
+    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . '</h1><div id="content">', null, false);
   }
 
   /**
@@ -278,9 +278,9 @@ class shellDetector {
   private function output($content, $class ='info', $html =true) {
     if($this->is_cron) {
       if($html) {
-        $this->output .= '<div class="' . $class . '">' . $content . '</div>';
+        $this->_output .= '<div class="' . $class . '">' . $content . '</div>';
       } else {
-        $this->output .= $content;
+        $this->_output .= $content;
       }
     } else {
       if($html) {
@@ -297,7 +297,7 @@ class shellDetector {
    */
   private function flush() {
     $filename = date($this->report_format, time());
-    file_put_contents($filename, $this->output);
+    file_put_contents($filename, $this->_output);
   }
 
   /**
@@ -332,7 +332,7 @@ class shellDetector {
    */
   private function listdir($dir) {
     $handle = opendir($dir);
-    if(count($this->files) > $this->filelimit) {
+    if(count($this->_files) > $this->filelimit) {
       return true;
     }
     while(($file = readdir($handle)) !== false) {
@@ -345,7 +345,7 @@ class shellDetector {
       }
       if(is_file($filepath)) {
         if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
-          $this->files[] = $filepath;
+          $this->_files[] = $filepath;
         }
       } else if(is_dir($filepath)) {
         if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
@@ -353,7 +353,7 @@ class shellDetector {
         }
       }
     }
-    $this->output('<span class="files">' . count($this->files) . '</span>', null, false);
+    $this->output('<span class="files">' . count($this->_files) . '</span>', null, false);
     closedir($handle);
   }
 
