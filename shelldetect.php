@@ -26,12 +26,13 @@ class shellDetector {
   private $filelimit = 30000; //settings: maximum files to scan (more then 30000 you should scan specific directory)
   private $useget = false; //settings: activate task by get
   private $authentication = array("username" => "admin", "password" => "protect"); //settings: protect script with user & password in case to disable simply set to NULL
+  private $remotefingerprint = false; //settings: get shells signatures db by remote
   
   //system variables
   private $_output = ''; //system variable used with is_cron
   private $_files = array(); //system variable hold all scanned files
   private $_badfiles = array(); //system variable hold bad files
-  private $fingerprints = array(); //system: currently on dev
+  private $fingerprints = array(); //system: hold shells singnatures
   private $_title = 'PHP Shell Detector'; //system: title
   private $_version = '1.2'; //system: version of shell detector
   private $_regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
@@ -64,7 +65,11 @@ class shellDetector {
     }
     
     if(file_exists('fingerprint.db')) {
-      eval(base64_decode(file_get_contents('fingerprint.db')));
+      $this->fingerprints = unserialize(base64_decode(file_get_contents('fingerprint.db')));
+    }
+
+    if ($this->remotefingerprint) {
+      $this->fingerprints = unserialize(base64_decode(file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest')));
     }
   }
 
@@ -75,6 +80,9 @@ class shellDetector {
     $this->header();
     if (!function_exists('openssl_public_encrypt')) {
       $this->output($this->t('Please note <strong>openssl</strong> library not found, suspicious files will be included in html without encryption.'), 'error');
+    }
+    if (count($this->fingerprints) == 0) {
+      $this->output($this->t('Please note, shells signatures database not found, suspicious files will be scan only by behavior.'), 'error');
     }
     switch ($this->task) {
       case 'getsha' :

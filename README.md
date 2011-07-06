@@ -8,7 +8,7 @@ PHP Shell Detector sponsored by http://www.websecure.co.il
 
 Requirements
 ------------
-PHP v5.x
+PHP 5.x, OpenSSL
 
 Usage
 -----
