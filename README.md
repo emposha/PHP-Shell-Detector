@@ -35,7 +35,10 @@ Options
  - report_format - used with is_cron(true) file format for report file
  - is_cron - if true run like a cron(no output)
  - filelimit - maximum files to scan (more then 30000 you should scan specific directory)
-
+ - useget - activate _GET variable for easy way to recive tasks
+ - authentication  - protect script with user & password in case to disable simply set to NULL
+ - remotefingerprint - get shells signatures db by remote
+  
 
 Changelog
 ---------
