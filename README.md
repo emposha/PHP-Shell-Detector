@@ -2,8 +2,7 @@ PHP Shell Detector
 ==================
 PHP Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
 
-http://www.emposha.com/wp-content/uploads/2011/07/shelldetect11.png
-NOTE: "raw/master"
+<center><img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect11.png" /></center>
 
 PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
