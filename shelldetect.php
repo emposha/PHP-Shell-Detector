@@ -64,8 +64,8 @@ class shellDetector {
       $this->task = $_GET['task'];
     }
     
-    if(file_exists('fingerprint.db')) {
-      $this->fingerprints = unserialize(base64_decode(file_get_contents('fingerprint.db')));
+    if(file_exists('shelldetect.db')) {
+      $this->fingerprints = unserialize(base64_decode(file_get_contents('shelldetect.db')));
     }
 
     if ($this->remotefingerprint) {
@@ -110,8 +110,8 @@ class shellDetector {
   private function update() {
     if($this->version()) {
       $content = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest');
-      chmod('fingerprint.db', 0777);
-      if (file_put_contents('fingerprint.db', $content)) {
+      chmod('shelldetect.db', 0777);
+      if (file_put_contents('shelldetect.db', $content)) {
         $this->output($this->t('Database updated succesfully!'));
       }
       else {
