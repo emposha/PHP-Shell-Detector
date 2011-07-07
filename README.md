@@ -1,8 +1,6 @@
 PHP Shell Detector
 ==================
-PHP Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
-
-<div style="text-align:center"><img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect11.png" /></div>
+<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" /> PHP Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
 
 PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
@@ -25,6 +23,10 @@ To activate PHP Shell Detector:
 3) Inspect all strange files, if some of files look suspicious, send them to http://www.websecure.co.il team. After submitting your file, it will be inspected and if there are any threats, it will be inserted into a “php shell detector” web shells signature database.
 
 4) If any web shells found and identified use your ftp/ssh client to remove it from your web server (IMPORTANT: please be carefull because some of shells may be integrated into system files!).
+
+Demo:
+
+    http://www.emposha.com/demo/shelldetect/
 
 Options
 -------
