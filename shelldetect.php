@@ -82,7 +82,7 @@ class shellDetector {
       $this->output($this->t('Please note <strong>openssl</strong> library not found, suspicious files will be included in html without encryption.'), 'error');
     }
     if (count($this->fingerprints) == 0) {
-      $this->output($this->t('Please note, shells signatures database not found, suspicious files will be scan only by behavior.'), 'error');
+      $this->output($this->t('Please note, shells signature database not found, suspicious files will be scan only by behavior.'), 'error');
     }
     switch ($this->task) {
       case 'getsha' :
@@ -112,14 +112,14 @@ class shellDetector {
       $content = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest');
       chmod('shelldetect.db', 0777);
       if (file_put_contents('shelldetect.db', $content)) {
-        $this->output($this->t('Database updated succesfully!'));
+        $this->output($this->t('Shells signature database updated succesfully!'));
       }
       else {
-        $this->output($this->t('Cant save fingerprint database please check permissions'), 'error');
+        $this->output($this->t('Cant save shells signature database please check permissions'), 'error');
       }
     }
     else {
-      $this->output($this->t('Your database already updated!'));
+      $this->output($this->t('Your shells signatures database already updated!'));
     }
   }
   
@@ -130,10 +130,10 @@ class shellDetector {
     $version = isset($this->fingerprints['version']) ? $this->fingerprints['version'] : 0;
     $server_version = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=checkver');
     if(strlen($server_version) != 0 && intval($server_version) != 0 && (intval($server_version) >  intval($version))) {
-      $this->output($this->t('New version found. Please update!'), 'error');
+      $this->output($this->t('New version of shells signature database found. Please update!'), 'error');
       return true;
     } else if(strlen($server_version) == 0 || intval($server_version) == 0) {
-      $this->output($this->t('Cant connect to server! New version check failed!'), 'error');
+      $this->output($this->t('Cant connect to server! Version check failed!'), 'error');
     }
     return false;
   }
