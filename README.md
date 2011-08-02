@@ -6,6 +6,12 @@ PHP Shell Detector is released under the MIT License <http://www.opensource.org/
 
 PHP Shell Detector sponsored by http://www.websecure.co.il
 
+
+Detection
+---------
+
+  Number of known shells: 159
+
 Requirements
 ------------
 PHP 5.x, OpenSSL

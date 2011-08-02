@@ -150,7 +150,7 @@ class shellDetector {
     if(count($this->_files) > $this->filelimit) {
       $this->output($this->t('File limit reached, scanning process stopped.'));
     }
-    $this->output($this->t('File scan done we have: @count files to analize', array("@count" => count($this->_files))));
+    $this->output($this->t('File scan done, we have: @count files to analize', array("@count" => count($this->_files))));
   }
 
   /**
