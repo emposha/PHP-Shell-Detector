@@ -52,7 +52,7 @@ class shellDetector {
     }
     
     if ($this->authentication != null) {
-      if ((!isset($_SERVER['PHP_AUTH_USER']) || (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] != $this->authentication['username'])) && (!isset($_SERVER['PHP_AUTH_PW']) ||(isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_PW'] != $this->authentication['password']))) {
+      if ((!isset($_SERVER['PHP_AUTH_USER']) || (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] != $this->authentication['username'])) || (!isset($_SERVER['PHP_AUTH_PW']) ||(isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_PW'] != $this->authentication['password']))) {
         header('WWW-Authenticate: Basic realm="Login"');
         header('HTTP/1.0 401 Unauthorized');
         echo 'Please login to continue.';

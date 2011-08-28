@@ -1,6 +1,6 @@
 Web Shell Detector
 ==================
-<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> Web Shell Detector – is a php script that helps you find and identify php shells. Web Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, web shell detector has a light weight and friendly interface.
+<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> Web Shell Detector – is a php script that helps you find and identify php/cgi(perl)/asp/aspx shells. Web Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, web shell detector has a light weight and friendly interface.
 
 Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
