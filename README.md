@@ -1,6 +1,6 @@
 Web Shell Detector
 ==================
-<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> Web Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
+<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> Web Shell Detector – is a php script that helps you find and identify php shells. Web Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, web shell detector has a light weight and friendly interface.
 
 Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
@@ -18,7 +18,7 @@ PHP 5.x, OpenSSL
 
 Usage
 -----
-To activate PHP Shell Detector:
+To activate Web Shell Detector:
 
 1) Upload shelldetect.php and shelldetect.db to your root directory
 
@@ -26,7 +26,7 @@ To activate PHP Shell Detector:
 
     Example: http://www.website.com/shelldetect.php
 
-3) Inspect all strange files, if some of files look suspicious, send them to http://www.websecure.co.il team. After submitting your file, it will be inspected and if there are any threats, it will be inserted into a “php shell detector” web shells signature database.
+3) Inspect all strange files, if some of files look suspicious, send them to http://www.websecure.co.il team. After submitting your file, it will be inspected and if there are any threats, it will be inserted into a “web shell detector” web shells signature database.
 
 4) If any web shells found and identified use your ftp/ssh client to remove it from your web server (IMPORTANT: please be carefull because some of shells may be integrated into system files!).
 
