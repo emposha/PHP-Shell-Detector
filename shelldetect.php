@@ -1,7 +1,7 @@
 <?php
 /**
- * PHP Shell Detector v1.2
- * PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * Web Shell Detector v1.3
+ * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
 
@@ -34,7 +34,7 @@ class shellDetector {
   private $_badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: hold shells singnatures
   private $_title = 'PHP Shell Detector'; //system: title
-  private $_version = '1.2'; //system: version of shell detector
+  private $_version = '1.3'; //system: version of shell detector
   private $_regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
 
@@ -220,8 +220,10 @@ class shellDetector {
    */
   private function fingerprint($file, $content = null, $flag = false) {
     $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small>';
-    $key .= '<iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
-    $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit" method="post">';
+    $key .= '<div id="wrapform_' . md5($file) . '" class="hidden"><iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
+    $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit&ver=2" method="post">';
+    $key .= '<dl><dt>'. $this->t('Submit file').' '.$file.'</dt><dd>';
+    $key .= '<dl><dt>'.$this->t('Your email').'<br /><span class="small">'.$this->t('(in case you want to be notified):').'</span></dt><dd><input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" /></dd></dl></dd></dl>';
     if (function_exists('openssl_public_encrypt')) {
       if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
         $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
@@ -231,6 +233,7 @@ class shellDetector {
     } else {
       $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
     }
+    $key .= '</div>';
     $class = 'green';
     $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
@@ -261,7 +264,7 @@ class shellDetector {
         $temp[] = $value;
       }
     }
-    return   implode($glue, array_unique($temp));
+    return implode($glue, array_unique($temp));
   }
 
   /**
@@ -275,8 +278,8 @@ class shellDetector {
    * Output header function
    */
   private function header() {
-    $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.green small{font-weight:400!important;color:#151515!important}.filesfound{position:relative}.files{position:absolute;left:4px;background-color:#fff9d7}iframe{border:0px;height:14px}</style>';
-    $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").click(function(){var id="for"+$(this).attr("id");$("#"+id).submit();$(this).parent().remove();console.log(id);$("#i"+id).removeClass("hidden");return false})}$(document).ready(init);';
+    $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.green small{font-weight:400!important;color:#151515!important}.filesfound{position:relative}.files{position:absolute;left:4px;background-color:#fff9d7}iframe{border:0px;height:24px;width:100%}.small{font-size: 10px;font-weight:normal;}.ui-widget-content dl dd dl {margin-left: 0px !important;}.ui-widget-content input {width: 310px;margin-top: 4px;}</style>';
+    $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").click(function(){var id="for"+$(this).attr("id");$("#wrap"+id).dialog({autoOpen:false,height:200,width:550,modal:true,title:"File submission",buttons:{"Submit file":function(){if($(".ui-dialog-content form").length){$("#i"+id).removeClass("hidden");$("#"+id).submit();$(".ui-dialog-content form").remove()}else{alert("This file already submited")}}}});$("#wrap"+id).dialog("open");return false})}$(document).ready(init);';
     $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>PHP Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . '</h1><div id="content">', null, false);
   }
 

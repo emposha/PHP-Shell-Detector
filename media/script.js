@@ -17,11 +17,35 @@ function init() {
     return false;
   });
   $(".source_submit").click(function() {
-  	var id = "for" + $(this).attr("id");
-  	$("#"+id).submit();
-  	$(this).parent().remove();
+    var id = "for" + $(this).attr("id");
+    $("#wrap" + id).dialog({
+      autoOpen: false,
+      height: 200,
+      width: 550,
+      modal: true,
+      title: "File submission",
+      buttons: {
+        "Submit file": function() {
+          if ($(".ui-dialog-content form").length) {
+            $("#i"+id).removeClass("hidden");
+            $("#"+id).submit();
+            $(".ui-dialog-content form").remove();
+          } else {
+            alert("This file already submited");
+          }
+        }
+      }
+    });
+    $("#wrap" + id).dialog("open");
+    return false;
+  });
+  
+  /*$(".source_submit").click(function() {
+    var id = "for" + $(this).attr("id");
+    $("#"+id).submit();
+    $(this).parent().remove();
     $("#i"+id).removeClass("hidden");
-  	return false;
-  })
+    return false;
+  })*/
 }
 $(document).ready(init);

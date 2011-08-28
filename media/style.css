@@ -98,5 +98,17 @@ dl dd dl dt {
 }
 iframe {
   border:0px;
-  height: 14px;
+  height: 24px;
+  width: 100%;
+}
+.small {
+  font-size: 10px;
+  font-weight:normal;
+}
+.ui-widget-content dl dd dl {
+  margin-left: 0px !important;
+}
+.ui-widget-content input {
+  width: 310px;
+  margin-top: 4px;
 }

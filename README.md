@@ -1,10 +1,10 @@
-PHP Shell Detector
+Web Shell Detector
 ==================
-<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> PHP Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
+<img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left" style="padding-right: 4px;" /> Web Shell Detector PHP Shell Detector – is a php script that helps you find and identify php shells. PHP Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, php shell detector has a light weight and friendly interface.
 
-PHP Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
-PHP Shell Detector sponsored by http://www.websecure.co.il
+Web Shell Detector sponsored by http://www.websecure.co.il
 
 
 Detection
@@ -53,6 +53,8 @@ Options
 
 Changelog
 ---------
+ - 1.3 submission of suspicious file to websecure.co.il changed, email field added with ability to get notify about suspicious file.
+ 
  - 1.2 encryption function added, authentication added, some small bugs fixed
 
  - 1.1 fingerprint function change
