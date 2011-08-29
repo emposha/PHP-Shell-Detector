@@ -23,6 +23,7 @@ function init() {
       height: 200,
       width: 550,
       modal: true,
+      resizable: false,
       title: "File submission",
       buttons: {
         "Submit file": function() {
