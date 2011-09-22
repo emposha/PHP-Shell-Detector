@@ -8,11 +8,12 @@
 
 import hashlib, sys, re, pickle, json
 import os, optparse, base64, codecs, stat
-import fnmatch
+import fnmatch, time
 
+from hashlib import md5
 from phpserialize import PHP_Serializer
 from urllib.request import urlopen
-from datetime import datetime, date, time
+from datetime import datetime, date
 
 ssl_support = True
 try:
@@ -105,15 +106,15 @@ class shellDetector :
       _match = _regex.findall(_content)
       print(_match)
       if _match :
-        _fileinfo = getfileinfo (_filename)
+        _fileinfo = self.getfileinfo (_filename)
         if self._showlinenumbers :
           self.output('<dt>suspicious functions used:</dt><dd>', '', False)
           _lines = _content.split("\n")
           _linecounter = 1
-          for line in _lines :
+          for _line in _lines :
             _match_line = _regex.findall(_line)
             if _match_line :
-              _lineid = md5.new(_line + _filename)
+              _lineid = md5(_line + _filename)
               self.output(_match_line.implode(', ')  + ' (<a href="#" class="showline" id="ne_' + _lineid + '">line:' + _linecounter + '</a>)', '', False)
               self.output('<div class="hidden source" id="line_' + _lineid + '"><code>' + escape(_line) + '</code></div>', '', False)
               self.output('&nbsp;</dd>', '', False)
@@ -139,11 +140,11 @@ class shellDetector :
     _file_stats = os.stat(_file)
     self.output('<dl><dt>Suspicious behavior found in: ' + _file + '<span class="plus">-</span></dt>', '', False)
     self.output('<dd><dl><dt>Full path:</dt><dd>' + _file + '</dd>', '', False)
-    self.output('<dt>Owner:</dt><dd>' + pwd.getpwuid(_file_stats.st_uid)[0] + '</dd>', '', False)
-    self.output('<dt>Permission:</dt><dd>'  +  oct(_file_stats[ST_MODE])[-3:] +  '</dd>', '', False)
+    self.output('<dt>Owner:</dt><dd>' + str(_file_stats.st_uid) + '</dd>', '', False)
+    self.output('<dt>Permission:</dt><dd>'  +  oct(_file_stats[stat.ST_MODE])[-3:] +  '</dd>', '', False)
     self.output('<dt>Last accessed:</dt><dd>' + time.strftime(self._dateformat, time.localtime(_file_stats[stat.ST_ATIME])) + '</dd>', '', False)
     self.output('<dt>Last modified:</dt><dd>' + time.strftime(self._dateformat, time.localtime(_file_stats[stat.ST_MTIME])) + '</dd>', '', False)
-    self.output('<dt>Filesize:</dt><dd>' + _file_stats [stat.ST_SIZE] +  '</dd>', '', False)
+    self.output('<dt>Filesize:</dt><dd>' + str(_file_stats [stat.ST_SIZE]) +  '</dd>', '', False)
 
   def version(self) :
     try :
