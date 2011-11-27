@@ -1,5 +1,14 @@
 Shell List
 ==========
+
+27/11/2011
+==========
+ - jc_crew_c99.txt
+ - nst_void_shell.txt
+ - wso_2_1.txt
+
+30/08/2011
+==========
  - 120667kk.php.txt
  - 420532Shell.php.txt
  - 629788tryag.txt
