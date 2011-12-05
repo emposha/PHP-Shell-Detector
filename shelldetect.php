@@ -181,7 +181,7 @@ class shellDetector {
         $content = file_get_contents($file);
         if(preg_match_all($this->_regex, $content, $matches)) {
           $flag = true;
-          $this->fileInfo($file);
+          $this->fileInfo($file, base64_encode($content));
           if($this->showlinenumbers) {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
             $_content = explode("\n", $content);
@@ -205,13 +205,14 @@ class shellDetector {
     $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->_badfiles) ? '<strong>'.count($this->_badfiles).'</strong>' : count($this->badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
-  private function fileInfo($file) {
+  private function fileInfo($file, $base64_content) {
     $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
     $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Owner:') . '</dt><dd>' . fileowner($file) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Permission:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Last accessed:') . '</dt><dd>' . date($this->dateformat, fileatime($file)) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Last modified:') . '</dt><dd>' . date($this->dateformat, filemtime($file)) . '</dd>', null, false);
+    $this->output('<dt>' . $this->t('MD5 hash:') . '</dt><dd>' . md5($base64_content) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Filesize:') . '</dt><dd>' . $this->HumanReadableFilesize($file) . '</dd>', null, false);
   }
 
@@ -219,6 +220,7 @@ class shellDetector {
    * Fingerprint function
    */
   private function fingerprint($file, $content = null, $flag = false) {
+    $base64_content = base64_encode($content);
     $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small>';
     $key .= '<div id="wrapform_' . md5($file) . '" class="hidden"><iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
     $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit&ver=2" method="post">';
@@ -228,14 +230,13 @@ class shellDetector {
       if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
         $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
       } else {
-        $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+        $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
       }
     } else {
-      $key .= '<input type="hidden" name="code" value="' . base64_encode($content) . '" /></form>';
+      $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
     }
     $key .= '</div>';
     $class = 'green';
-    $base64_content = base64_encode($content);
     foreach ($this->fingerprints as $fingerprint => $shell) {
       if(preg_match("/".preg_quote($fingerprint, '/')."/", $base64_content)) {
         $key = $this->t('Positive, it`s a ') . $shell;
@@ -247,7 +248,7 @@ class shellDetector {
     if ($flag) {
       $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
     } else if ($class == 'red') {
-      $this->fileInfo($file);
+      $this->fileInfo($file, $base64_content);
       $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
     }
   }
