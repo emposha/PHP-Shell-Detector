@@ -10,7 +10,7 @@ Web Shell Detector sponsored by http://www.websecure.co.il
 Detection
 ---------
 
-  Number of known shells: 220
+  Number of known shells: 222
 
 Requirements
 ------------
