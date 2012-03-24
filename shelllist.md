@@ -1,236 +1,246 @@
 Shell List
 ==========
+
+24/03/2012
+==========
+ - c99shell_xpsh_v_0_4_encrypted_2
+ - c99shell_xpsh_v_0_4_encrypted
+ - c99shell_xpsh_v_0_4_packed_2
+ - c99shell_xpsh_v_0_4_packed
+ - php_ssh2_shell_encrypted
+ - php_ssh2_shell_packed
+ 
 13/03/2012
 ==========
- - cbot.txt
- - udpflooder.txt
+ - cbot
+ - udpflooder
  
 13/02/2012
 ==========
- - r57gentr_c99.txt
- - jackalphp.txt
+ - r57gentr_c99
+ - jackalphp
  
 27/11/2011
 ==========
- - jc_crew_c99.txt
- - nst_void_shell.txt
- - wso_2_1.txt
+ - jc_crew_c99
+ - nst_void_shell
+ - wso_2_1
 
 30/08/2011
 ==========
- - 120667kk.php.txt
- - 420532Shell.php.txt
- - 629788tryag.txt
- - 681985c99.txt
- - 951078biJ.txt
- - accept_language.txt
- - Ajan.asp.txt
- - Ajax_PHP Command Shell.txt
- - andr3a.txt
- - Antichat Shell v1.3.txt
- - Asmodeus v0.1.pl.txt
- - aspx-shell.txt
- - aspydrv.txt
- - avatar10977rl4sf.txt
- - Ayyildiz Tim  -AYT- Shell v 2.1 Biz.txt
- - aZRaiLPhp v1.0.txt
- - b374k(compressed).txt
- - backdoor.txt
- - backdoor1.txt
- - backdoorfr.txt
- - backup.php.txt
- - backupsql.txt
- - Blind Shell.cpp.txt
- - blood3rpriv8.txt
- - c99_locus7s.txt
- - c99_madnet.txt
- - c99_PSych0.txt
- - c99_w4cking.txt
- - c99-001.txt
- - c99-002.txt
- - c99-003.txt
- - c99-004.txt
- - c99-Ultimate.txt
- - c99.txt
- - c99(1).php.txt
- - c99(compressed).txt
- - c99unlimited.txt
- - c100-001.txt
- - c100.txt
- - c2007.php.txt
- - Casus15.php.txt
- - cgi-python.py.txt
- - cgi.txt
- - CMD.asp.txt
- - CmdAsp.asp.txt
- - coderz.txt
- - connectback2.pl.txt
- - cpanel.txt
- - Crystal.txt
- - cshell.txt
- - ctt_sh.txt
- - cybershell.txt
- - CyberSpy5.Asp.txt
- - darkshell.txt
- - dC3 Security Crew Shell PRiV.txt
- - dc3shell.txt
- - Dive Shell 1.0 - Emperor Hacking Team.txt
- - DTool Pro.txt
- - Dx.txt
- - DxShell_hk.php.txt
- - EFSO_2.asp.txt
- - EGY_spider.txt
- - Ekin0x.txt
- - elmaliseker.asp.txt
- - erne.txt
- - FaTaLisTiCz_Fx.txt
- - Fatalshell.php.txt
- - fuckphpshell.txt
- - g00nshell-v1.3.txt
- - GFS web-shell ver 3.1.7 - PRiV8.txt
- - gfs_sh.txt
- - GNYshell.txt
- - goon.txt
- - GSCshell.txt
- - h4ntu shell [powered by tsoi].txt
- - hacker.txt
- - hellyeah.txt
- - hiddenshell.txt
- - htaccess_shell.txt
- - img.php.txt
- - iMHaPFtp.txt
- - indexer.asp.txt
- - ironshell-001.txt
- - ironshell.txt
- - isko.txt
- - itsecteam_shell.txt
- - jackal_v1.3.txt
- - jackal.txt
- - Java Shell.js.txt
- - joomla.txt
- - JspWebshell 1.2.txt
- - KAdot Universal Shell v0.1.6.txt
- - Klasvayv.asp.txt
- - kral.txt
- - lama.txt
- - lamashell.txt
- - Liz0ziM Private Safe Mode Command Execuriton Bypass Exploit.txt
- - lizozim.txt
- - load_shell.txt
- - locusshell.txt
- - lolipop.txt
- - lostDC-001.txt
- - lostDc.txt
- - lurm_safemod_on.cgi.txt
- - m1n1shell.txt
- - mahkeme.txt
- - mm.txt
- - Mohajer22-perl.txt
- - Moroccan Spamers Ma-EditioN By GhOsT.txt
- - myshell.txt
- - Mysql interface v1.0.txt
- - MySQL Web Interface Version 0.8.txt
- - mysql_shell.txt
- - mysql_tool.txt
- - mysql.txt
- - N3fa5t1cA.txt
- - NCC-Shell.txt
- - NetworkFileManagerPHP.txt
- - nexpl0rer.txt
- - NIX REMOTE WEB-SHELL v.0.5 alpha Lite Public Version.txt
- - Nshell (1).php.txt
- - nshell.txt
- - nst.txt
- - nstview.txt
- - ntdaddy.asp.txt
- - O0O.txt
- - onboomshell.txt
- - pd.txt
- - perl.txt
- - perlbot.pl.txt
- - PH Vayv.txt
- - PHANTASMA.txt
- - PHP Backdoor Connect.pl.txt
- - PHP_Shell.txt
- - php-backdoor.txt
- - php-bypass.txt
- - php-include-w-shell.txt
- - phpbackdoor15.txt
- - pHpINJ.txt
- - PHPJackal.txt
- - PHPRemoteView.txt
- - phpshell17.txt
- - Phyton Shell.py.txt
- - Private-i3lue.txt
- - pws.txt
- - r57 Shell.php.txt
- - r57_iFX.txt
- - r57_kartal.txt
- - r57_Mohajer22.txt
- - r57-001.txt
- - r57-002.txt
- - r57-003.txt
- - r57.php.txt
- - r57.txt
- - r57gentr_c99.txt
- - r57(compressed).txt
- - r57shell1.40.txt
- - r57shell2.0.txt
- - r577.php.txt
- - Rader.asp.txt
- - Rem Exp.asp.txt
- - rootaccess.txt
- - rootshell.txt
- - ru24_post_sh.txt
- - Russian.php.txt
- - s.php.txt
- - s72 Shell v1.1 Coding.txt
- - s72.txt
- - Safe_Mode Bypass PHP 4.4.2 and PHP 5.1.2.txt
- - Safe0ver Shell -Safe Mod Bypass By Evilc0der.txt
- - safe0ver-001.txt
- - safe0ver.txt
- - save.txt
- - Server Variables.asp.txt
- - shell.php.txt
- - shellbot.pl.txt
- - SimAttacker - Vrsion 1.0.0 - priv8 4 My friend.txt
- - simattacker.txt
- - simple_cmd.txt
- - simple-backdoor.txt
- - SimShell 1.0 - Simorgh Security MGZ.txt
- - Sincap.php.txt
- - smtpd.py.txt
- - SnIpEr_SA Shell.txt
- - sniper.txt
- - snipershell.txt
- - spy.php.txt
- - spyshell.txt
- - sql.txt
- - Stakershell.txt
- - stres.txt
- - stressbypass.txt
- - style.txt
- - sym4.txt
- - Team SQL.txt
- - telnet.cgi.txt
- - telnet.pl.txt
- - telnetd.pl.txt
- - Test.php.txt
- - Tool.asp.txt
- - toolaspshell.txt
- - TrYaG.txt
- - update.txt
- - Uploader.txt
- - w.php.txt
- - w3d.php.txt
- - w4ck1ng Shell.txt
- - wacking.php.txt
- - WebShell.cgi.txt
- - webshell.txt
- - WinX Shell.txt
- - Worse Linux Shell.txt
- - xinfo.php.txt
- - zacosmall.txt
- - zehir4.asp.txt
- - zehir4.txt
+ - 120667kk.php
+ - 420532Shell.php
+ - 629788tryag
+ - 681985c99
+ - 951078biJ
+ - accept_language
+ - Ajan.asp
+ - Ajax_PHP Command Shell
+ - andr3a
+ - Antichat Shell v1.3
+ - Asmodeus v0.1.pl
+ - aspx-shell
+ - aspydrv
+ - avatar10977rl4sf
+ - Ayyildiz Tim  -AYT- Shell v 2.1 Biz
+ - aZRaiLPhp v1.0
+ - b374k(compressed)
+ - backdoor
+ - backdoor1
+ - backdoorfr
+ - backup.php
+ - backupsql
+ - Blind Shell.cpp
+ - blood3rpriv8
+ - c99_locus7s
+ - c99_madnet
+ - c99_PSych0
+ - c99_w4cking
+ - c99-001
+ - c99-002
+ - c99-003
+ - c99-004
+ - c99-Ultimate
+ - c99
+ - c99(1).php
+ - c99(compressed)
+ - c99unlimited
+ - c100-001
+ - c100
+ - c2007.php
+ - Casus15.php
+ - cgi-python.py
+ - cgi
+ - CMD.asp
+ - CmdAsp.asp
+ - coderz
+ - connectback2.pl
+ - cpanel
+ - Crystal
+ - cshell
+ - ctt_sh
+ - cybershell
+ - CyberSpy5.Asp
+ - darkshell
+ - dC3 Security Crew Shell PRiV
+ - dc3shell
+ - Dive Shell 1.0 - Emperor Hacking Team
+ - DTool Pro
+ - Dx
+ - DxShell_hk.php
+ - EFSO_2.asp
+ - EGY_spider
+ - Ekin0x
+ - elmaliseker.asp
+ - erne
+ - FaTaLisTiCz_Fx
+ - Fatalshell.php
+ - fuckphpshell
+ - g00nshell-v1.3
+ - GFS web-shell ver 3.1.7 - PRiV8
+ - gfs_sh
+ - GNYshell
+ - goon
+ - GSCshell
+ - h4ntu shell [powered by tsoi]
+ - hacker
+ - hellyeah
+ - hiddenshell
+ - htaccess_shell
+ - img.php
+ - iMHaPFtp
+ - indexer.asp
+ - ironshell-001
+ - ironshell
+ - isko
+ - itsecteam_shell
+ - jackal_v1.3
+ - jackal
+ - Java Shell.js
+ - joomla
+ - JspWebshell 1.2
+ - KAdot Universal Shell v0.1.6
+ - Klasvayv.asp
+ - kral
+ - lama
+ - lamashell
+ - Liz0ziM Private Safe Mode Command Execuriton Bypass Exploit
+ - lizozim
+ - load_shell
+ - locusshell
+ - lolipop
+ - lostDC-001
+ - lostDc
+ - lurm_safemod_on.cgi
+ - m1n1shell
+ - mahkeme
+ - mm
+ - Mohajer22-perl
+ - Moroccan Spamers Ma-EditioN By GhOsT
+ - myshell
+ - Mysql interface v1.0
+ - MySQL Web Interface Version 0.8
+ - mysql_shell
+ - mysql_tool
+ - mysql
+ - N3fa5t1cA
+ - NCC-Shell
+ - NetworkFileManagerPHP
+ - nexpl0rer
+ - NIX REMOTE WEB-SHELL v.0.5 alpha Lite Public Version
+ - Nshell (1).php
+ - nshell
+ - nst
+ - nstview
+ - ntdaddy.asp
+ - O0O
+ - onboomshell
+ - pd
+ - perl
+ - perlbot.pl
+ - PH Vayv
+ - PHANTASMA
+ - PHP Backdoor Connect.pl
+ - PHP_Shell
+ - php-backdoor
+ - php-bypass
+ - php-include-w-shell
+ - phpbackdoor15
+ - pHpINJ
+ - PHPJackal
+ - PHPRemoteView
+ - phpshell17
+ - Phyton Shell.py
+ - Private-i3lue
+ - pws
+ - r57 Shell.php
+ - r57_iFX
+ - r57_kartal
+ - r57_Mohajer22
+ - r57-001
+ - r57-002
+ - r57-003
+ - r57.php
+ - r57
+ - r57gentr_c99
+ - r57(compressed)
+ - r57shell1.40
+ - r57shell2.0
+ - r577.php
+ - Rader.asp
+ - Rem Exp.asp
+ - rootaccess
+ - rootshell
+ - ru24_post_sh
+ - Russian.php
+ - s.php
+ - s72 Shell v1.1 Coding
+ - s72
+ - Safe_Mode Bypass PHP 4.4.2 and PHP 5.1.2
+ - Safe0ver Shell -Safe Mod Bypass By Evilc0der
+ - safe0ver-001
+ - safe0ver
+ - save
+ - Server Variables.asp
+ - shell.php
+ - shellbot.pl
+ - SimAttacker - Vrsion 1.0.0 - priv8 4 My friend
+ - simattacker
+ - simple_cmd
+ - simple-backdoor
+ - SimShell 1.0 - Simorgh Security MGZ
+ - Sincap.php
+ - smtpd.py
+ - SnIpEr_SA Shell
+ - sniper
+ - snipershell
+ - spy.php
+ - spyshell
+ - sql
+ - Stakershell
+ - stres
+ - stressbypass
+ - style
+ - sym4
+ - Team SQL
+ - telnet.cgi
+ - telnet.pl
+ - telnetd.pl
+ - Test.php
+ - Tool.asp
+ - toolaspshell
+ - TrYaG
+ - update
+ - Uploader
+ - w.php
+ - w3d.php
+ - w4ck1ng Shell
+ - wacking.php
+ - WebShell.cgi
+ - webshell
+ - WinX Shell
+ - Worse Linux Shell
+ - xinfo.php
+ - zacosmall
+ - zehir4.asp
+ - zehir4
