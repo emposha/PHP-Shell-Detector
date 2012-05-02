@@ -11,7 +11,7 @@ set_time_limit(0);
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
 
-$shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => true, 'authentication' => null));
 $shelldetector->start();
 
 class shellDetector {
@@ -156,7 +156,7 @@ class shellDetector {
     }
     $this->output($this->t('File scan done, we have: @count files to analize', array("@count" => count($this->_files))));
      if ($this->hidesuspicious) {
-      $this->output($this->t('Please note output for suspicious files will be hidden'), 'error');
+      $this->output($this->t('Please note suspicious files information will not be displayed'), 'error');
     }
   }
 
@@ -178,35 +178,52 @@ class shellDetector {
   private function anaylize() {
     $counter = 0;
     foreach($this->_files as $file) {
-      $flag = false;
       $content = file_get_contents($file);
-      ob_start();
-      if(preg_match_all($this->_regex, $content, $matches)) {
-        $flag = true;
-        $this->fileInfo($file, base64_encode($content));
-        if($this->showlinenumbers) {
-          $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
-          $_content = explode("\n", $content);
-          for($line = 0; $line < count($_content); $line++) {
-            if(preg_match_all($this->_regex, $_content[$line], $matches)) {
-              $lineid = md5($line . $file);
-              $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
-              $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
+      $base64_content = base64_encode($content);
+      $shellflag = $this->fingerprint($file, $base64_content);
+      
+      if ($shellflag !== false) {
+        $this->fileInfo($file, $base64_content);
+        $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="red">' . $this->t('Positive, it`s a ') . $shellflag . '</dd></dl></dd></dl>', null, false);
+      } else if ($this->hidesuspicious !== true) {
+        if(preg_match_all($this->_regex, $content, $matches)) {
+          $this->fileInfo($file, base64_encode($content));
+          if($this->showlinenumbers) {
+            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
+            $_content = explode("\n", $content);
+            for($line = 0; $line < count($_content); $line++) {
+              if(preg_match_all($this->_regex, $_content[$line], $matches)) {
+                $lineid = md5($line . $file);
+                $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
+                $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
+              }
             }
+            $this->output('&nbsp;</dd>', null, false);
+          } else {
+            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
           }
-          $this->output('&nbsp;</dd>', null, false);
-        } else {
-          $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
+          $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small>';
+          $key .= '<div id="wrapform_' . md5($file) . '" class="hidden"><iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
+          $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit&ver=2" method="post">';
+          $key .= '<dl><dt>'. $this->t('Submit file').' '.$file.'</dt><dd>';
+          $key .= '<dl><dt>'.$this->t('Your email').'<br /><span class="small">'.$this->t('(in case you want to be notified):').'</span></dt><dd><input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" /></dd></dl></dd></dl>';
+          if (function_exists('openssl_public_encrypt')) {
+            if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
+              $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
+            } else {
+              $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
+            }
+          } else {
+            $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
+          }
+          $key .= '</div>';
+          $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="green">' . $key . '</dd></dl></dd></dl>', null, false);
+          $counter++;
         }
-        $counter++;
-      }
-      $shellflag = $this->fingerprint($file, $content, $flag);
-      $content = ob_get_contents();
-      ob_end_clean();
-      if ($shellflag && $this->hidesuspicious === true) {
-        $this->output($content);
-      } else if ($this->hidesuspicious === false) {
-        $this->output($content, null, false);
+      } else {
+        if(preg_match_all($this->_regex, $content, $matches)) {
+          $counter++;
+        }
       }
     }
     $this->output('', 'clearer');
@@ -227,40 +244,16 @@ class shellDetector {
   /**
    * Fingerprint function
    */
-  private function fingerprint($file, $content = null, $flag = false) {
-    $base64_content = base64_encode($content);
-    $key = $this->t('Negative').' <small class="source_submit_parent">('.$this->t('if wrong').' <a href="#" id="m_' . md5($file) . '" class="source_submit">'.$this->t('submit file for analize').'</a>)</small>';
-    $key .= '<div id="wrapform_' . md5($file) . '" class="hidden"><iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
-    $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="http://www.websecure.co.il/phpshelldetector/api/?task=submit&ver=2" method="post">';
-    $key .= '<dl><dt>'. $this->t('Submit file').' '.$file.'</dt><dd>';
-    $key .= '<dl><dt>'.$this->t('Your email').'<br /><span class="small">'.$this->t('(in case you want to be notified):').'</span></dt><dd><input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" /></dd></dl></dd></dl>';
-    if (function_exists('openssl_public_encrypt')) {
-      if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
-        $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
-      } else {
-        $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
-      }
-    } else {
-      $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
-    }
-    $key .= '</div>';
-    $class = 'green';
+  private function fingerprint($file, $content = null) {
+    $key = false;
     foreach ($this->fingerprints as $fingerprint => $shell) {
-      if(preg_match("/".preg_quote($fingerprint, '/')."/", $base64_content)) {
-        $key = $this->t('Positive, it`s a ') . $shell;
-        $class = 'red';
+      if(preg_match("/".preg_quote($fingerprint, '/')."/", $content)) {
+        $key = $shell;
         $this->_badfiles[] = $file;
         break;
       }
     }
-    if ($flag) {
-      $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
-      return false;
-    } else if ($class == 'red') {
-      $this->fileInfo($file, $base64_content);
-      $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
-      return true;
-    }
+    return $key;
   }
 
   /**
