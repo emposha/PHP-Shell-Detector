@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.3
+ * Web Shell Detector v1.4
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -10,6 +10,7 @@ set_time_limit(0);
 
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
+
 $shelldetector = new shellDetector(array('extension' => array('php', 'txt')));
 $shelldetector->start();
 
@@ -27,6 +28,7 @@ class shellDetector {
   private $useget = false; //settings: activate task by get
   private $authentication = array("username" => "admin", "password" => "protect"); //settings: protect script with user & password in case to disable simply set to NULL
   private $remotefingerprint = false; //settings: get shells signatures db by remote
+  private $hidesuspicious = false; //settings: hide suspicious files
   
   //system variables
   private $_output = ''; //system variable used with is_cron
@@ -37,7 +39,8 @@ class shellDetector {
   private $_version = '1.3'; //system: version of shell detector
   private $_regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
-
+  private $_self = '';
+  
   /**
    * Constructor
    */
@@ -49,6 +52,7 @@ class shellDetector {
           $this->$key = $value;
         }
       }
+      $this->_self = basename(__FILE__);
     }
     
     if ($this->authentication != null) {
@@ -151,6 +155,9 @@ class shellDetector {
       $this->output($this->t('File limit reached, scanning process stopped.'));
     }
     $this->output($this->t('File scan done, we have: @count files to analize', array("@count" => count($this->_files))));
+     if ($this->hidesuspicious) {
+      $this->output($this->t('Please note output for suspicious files will be hidden'), 'error');
+    }
   }
 
   /**
@@ -170,35 +177,36 @@ class shellDetector {
    */
   private function anaylize() {
     $counter = 0;
-    $self = basename(__FILE__);
     foreach($this->_files as $file) {
-      if ($self == $file) {
-        unset($file);
-      }
-      $extension = pathinfo($file);
-      if(in_array($extension['extension'], $this->extension)) {
-        $flag = false;
-        $content = file_get_contents($file);
-        if(preg_match_all($this->_regex, $content, $matches)) {
-          $flag = true;
-          $this->fileInfo($file, base64_encode($content));
-          if($this->showlinenumbers) {
-            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
-            $_content = explode("\n", $content);
-            for($line = 0; $line < count($_content); $line++) {
-              if(preg_match_all($this->_regex, $_content[$line], $matches)) {
-                $lineid = md5($line . $file);
-                $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
-                $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
-              }
+      $flag = false;
+      $content = file_get_contents($file);
+      ob_start();
+      if(preg_match_all($this->_regex, $content, $matches)) {
+        $flag = true;
+        $this->fileInfo($file, base64_encode($content));
+        if($this->showlinenumbers) {
+          $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
+          $_content = explode("\n", $content);
+          for($line = 0; $line < count($_content); $line++) {
+            if(preg_match_all($this->_regex, $_content[$line], $matches)) {
+              $lineid = md5($line . $file);
+              $this->output($this->_implode($matches) . ' (<a href="#" class="showline" id="ne_' . $lineid . '">' . $this->t('line:') . ($line + 1) . '</a>);', null, false);
+              $this->output('<div class="hidden source" id="line_' . $lineid . '"><code>' . htmlentities($_content[$line]) . '</code></div>', null, false);
             }
-            $this->output('&nbsp;</dd>', null, false);
-          } else {
-            $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
           }
-          $counter++;
+          $this->output('&nbsp;</dd>', null, false);
+        } else {
+          $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>' . $this->_implode($matches) . '&nbsp;</dd>', null, false);
         }
-        $this->fingerprint($file, $content, $flag);
+        $counter++;
+      }
+      $shellflag = $this->fingerprint($file, $content, $flag);
+      $content = ob_get_contents();
+      ob_end_clean();
+      if ($shellflag && $this->hidesuspicious === true) {
+        $this->output($content);
+      } else if ($this->hidesuspicious === false) {
+        $this->output($content, null, false);
       }
     }
     $this->output('', 'clearer');
@@ -247,9 +255,11 @@ class shellDetector {
     }
     if ($flag) {
       $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
+      return false;
     } else if ($class == 'red') {
       $this->fileInfo($file, $base64_content);
       $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $class . '">' . $key . '</dd></dl></dd></dl>', null, false);
+      return true;
     }
   }
 
@@ -287,7 +297,7 @@ class shellDetector {
   /**
    * Output
    */
-  private function output($content, $class ='info', $html =true) {
+  private function output($content, $class ='info', $html = true) {
     if($this->is_cron) {
       if($html) {
         $this->_output .= '<div class="' . $class . '">' . $content . '</div>';
@@ -357,7 +367,12 @@ class shellDetector {
       }
       if(is_file($filepath)) {
         if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
-          $this->_files[] = $filepath;
+          $extension = pathinfo($filepath);
+          if(in_array($extension['extension'], $this->extension)) {
+            if ($this->_self != basename($filepath)) {
+              $this->_files[] = $filepath;
+            }
+          }
         }
       } else if(is_dir($filepath)) {
         if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
@@ -389,7 +404,7 @@ class shellDetector {
   /**
    * Own error handler
    */
-  public function error_handler($errno, $errstr, $errfile, $errline) {
+  static public function error_handler($errno, $errstr, $errfile, $errline) {
     switch ($errno) {
       case E_USER_ERROR :
 

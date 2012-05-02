@@ -53,6 +53,8 @@ Options
 
 Changelog
 ---------
+ - 1.4 hide suspicious files option added, file scanning changed.
+
  - 1.3 submission of suspicious file to websecure.co.il changed, email field added with ability to get notify about suspicious file.
  
  - 1.2 encryption function added, authentication added, some small bugs fixed
