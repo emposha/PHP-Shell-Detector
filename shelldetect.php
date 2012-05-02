@@ -187,7 +187,7 @@ class shellDetector {
         $this->output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="red">' . $this->t('Positive, it`s a ') . $shellflag . '</dd></dl></dd></dl>', null, false);
       } else if ($this->hidesuspicious !== true) {
         if(preg_match_all($this->_regex, $content, $matches)) {
-          $this->fileInfo($file, base64_encode($content));
+          $this->fileInfo($file, $base64_content);
           if($this->showlinenumbers) {
             $this->output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
             $_content = explode("\n", $content);
@@ -208,7 +208,7 @@ class shellDetector {
           $key .= '<dl><dt>'. $this->t('Submit file').' '.$file.'</dt><dd>';
           $key .= '<dl><dt>'.$this->t('Your email').'<br /><span class="small">'.$this->t('(in case you want to be notified):').'</span></dt><dd><input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" /></dd></dl></dd></dl>';
           if (function_exists('openssl_public_encrypt')) {
-            if (openssl_public_encrypt(base64_encode($content), $crypted_data, base64_decode($this->_public_key))) {
+            if (openssl_public_encrypt($base64_content, $crypted_data, base64_decode($this->_public_key))) {
               $key .= '<input type="hidden" name="crypted" value="1" /><input type="hidden" name="code" value="' . base64_encode($crypted_data) . '" /></form>';
             } else {
               $key .= '<input type="hidden" name="code" value="' . $base64_content . '" /></form>';
