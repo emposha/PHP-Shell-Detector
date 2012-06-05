@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.4
+ * Web Shell Detector v1.5
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -10,6 +10,9 @@ set_time_limit(0);
 
 //own error handler
 set_error_handler( array("shellDetector", "error_handler"));
+
+// set the default timezone to use.
+date_default_timezone_set('GMT');
 
 $shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => false, 'authentication' => null));
 $shelldetector->start();
@@ -35,9 +38,9 @@ class shellDetector {
   private $_files = array(); //system variable hold all scanned files
   private $_badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: hold shells singnatures
-  private $_title = 'Web Shell Detector v1.4'; //system: title
-  private $_version = '1.3'; //system: version of shell detector
-  private $_regex = '%(\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
+  private $_title = 'Web Shell Detector'; //system: title
+  private $_version = '1.5'; //system: version of shell detector
+  private $_regex = '%(preg_replace.*\/e|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
   private $_self = '';
   
@@ -73,7 +76,7 @@ class shellDetector {
     }
 
     if ($this->remotefingerprint) {
-      $this->fingerprints = unserialize(base64_decode(file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest')));
+      $this->fingerprints = unserialize(base64_decode(file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/shelldetect.db')));
     }
   }
 
@@ -109,11 +112,11 @@ class shellDetector {
   }
   
   /**
-   * Update function get lates update
+   * Update function get latest update
    */
   private function update() {
     if($this->version()) {
-      $content = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=getlatest');
+      $content = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/shelldetect.db');
       chmod('shelldetect.db', 0777);
       if (file_put_contents('shelldetect.db', $content)) {
         $this->output($this->t('Shells signature database updated succesfully!'));
@@ -132,12 +135,21 @@ class shellDetector {
    */
   private function version() {
     $version = isset($this->fingerprints['version']) ? $this->fingerprints['version'] : 0;
-    $server_version = file_get_contents('http://www.websecure.co.il/phpshelldetector/api/?task=checkver');
+    $server_version = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/version/db');
     if(strlen($server_version) != 0 && intval($server_version) != 0 && (intval($server_version) >  intval($version))) {
       $this->output($this->t('New version of shells signature database found. Please update!'), 'error');
       return true;
     } else if(strlen($server_version) == 0 || intval($server_version) == 0) {
       $this->output($this->t('Cant connect to server! Version check failed!'), 'error');
+    }
+		//check application version
+		$app_version = floatval($this->_version);
+		$server_version = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/version/app');
+    if(strlen($server_version) != 0 && floatval($server_version) != 0 && (floatval($server_version) >  $app_version)) {
+      $this->output($this->t('New version of application found. Please update!'), 'error');
+      return true;
+    } else if(strlen($server_version) == 0 || intval($server_version) == 0) {
+      $this->output($this->t('Cant connect to server! Application version check failed!'), 'error');
     }
     return false;
   }
@@ -180,7 +192,7 @@ class shellDetector {
     foreach($this->_files as $file) {
       $content = file_get_contents($file);
       $base64_content = base64_encode($content);
-      $shellflag = $this->fingerprint($file, $base64_content);
+      $shellflag = $this->unpack($file, $content, $base64_content);
       
       if ($shellflag !== false) {
         $this->fileInfo($file, $base64_content);
@@ -227,9 +239,12 @@ class shellDetector {
       }
     }
     $this->output('', 'clearer');
-    $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->_badfiles) ? '<strong>'.count($this->_badfiles).'</strong>' : count($this->badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
+    $this->output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->_badfiles) ? '<strong>'.count($this->_badfiles).'</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
+	/**
+	 * Show file information
+	 */
   private function fileInfo($file, $base64_content) {
     $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
     $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
@@ -240,6 +255,55 @@ class shellDetector {
     $this->output('<dt>' . $this->t('MD5 hash:') . '</dt><dd>' . md5($base64_content) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Filesize:') . '</dt><dd>' . $this->HumanReadableFilesize($file) . '</dd>', null, false);
   }
+
+	/**
+	 * Unpacking function, main idea taken from http://www.tareeinternet.com/forum/knowledgebase/274-decoding-eval-gzinflate-base64_decode.html
+	 */
+	private function unpack($file, $content, $base64_content) {
+		if ($flag = $this->fingerprint($file, $base64_content)) {
+				return $flag;
+		} else {
+			$counter = 0;
+			$encoded_content = preg_replace("/<\?php|\?>|<\?/", "", $content);
+			if (preg_match("/(\beval\b\(gzinflate|\beval\b\(base64_decode)/", $encoded_content)) {
+				while (preg_match("/\beval\((gzinflate|base64_decode)\((.*?)\);/", $encoded_content, $matches)) {
+					$encoded_content = preg_replace("/<\?php|\?>|<\?|eval/", "", $encoded_content);
+					if (isset($matches[1]) && isset($matches[2]) && strpos($matches[2] ,'$') === false) {
+						eval("\$encoded_content = ".$matches[1].'('.$matches[2].";");
+					} else {
+						$encoded_content = '';
+					}
+					if ($counter > 20) {
+						//protect from looping
+						break;
+					}
+					$counter++;
+				}
+			} else if (preg_match("/preg_replace.*\/e\"/", $encoded_content)) {
+				while (preg_match("/preg_replace\((.*?)\/e(.*)\);/", $encoded_content, $matches)) {
+					$encoded_content = preg_replace("/<\?php|\?>|<\?/", "", $encoded_content);
+					preg_replace("/preg_replace\((.*?)\/e(.*)\);/", "", $encoded_content);
+					if (isset($matches[1]) && isset($matches[2])) {
+						eval("\$encoded_content = preg_replace(".$matches[1].'/'.$matches[2].');');
+					}
+					if ($counter > 20) {
+						//protect from looping
+						break;
+					}
+					$counter++;
+				}
+			} else {
+				$encoded_content = '';
+			}
+			if ($encoded_content != '') {
+				$encoded_content64 = base64_encode($encoded_content);
+				$flag = $this->fingerprint($file, $encoded_content64);
+			} else {
+				$flag = false;
+			}
+		}
+		return $flag;
+	}
 
   /**
    * Fingerprint function
@@ -284,14 +348,14 @@ class shellDetector {
   private function header() {
     $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.green small{font-weight:400!important;color:#151515!important}.filesfound{position:relative}.files{position:absolute;left:4px;background-color:#fff9d7}iframe{border:0px;height:24px;width:100%}.small{font-size: 10px;font-weight:normal;}.ui-widget-content dl dd dl {margin-left: 0px !important;}.ui-widget-content input {width: 310px;margin-top: 4px;}.submit_email {width: 190px !important;}.submit_email_field{float: left; width: 100px !important;}</style>';
     $script = 'function init(){$("dt").click(function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").click(function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").click(function(){var id="for"+$(this).attr("id");$("#wrap"+id).dialog({autoOpen:false,height:200,width:550,modal:true,resizable: false,title:"File submission",buttons:{"Submit file":function(){if($(".ui-dialog-content form").length){$("#i"+id).removeClass("hidden");$("#"+id).submit();$(".ui-dialog-content form").remove()}else{alert("This file already submited")}}}});$("#wrap"+id).dialog("open");return false})}$(document).ready(init);';
-    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Web Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . '</h1><div id="content">', null, false);
+    $this->output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Web Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . ' v'.$this->_version.'</h1><div id="content">', null, false);
   }
 
   /**
    * Output
    */
-  private function output($content, $class ='info', $html = true) {
-    if($this->is_cron) {
+  static function output($content, $class ='info', $html = true) {
+    if(isset($this) && $this->is_cron) {
       if($html) {
         $this->_output .= '<div class="' . $class . '">' . $content . '</div>';
       } else {
@@ -361,7 +425,7 @@ class shellDetector {
       if(is_file($filepath)) {
         if(substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
           $extension = pathinfo($filepath);
-          if(in_array($extension['extension'], $this->extension)) {
+          if(isset($extension['extension']) && in_array($extension['extension'], $this->extension)) {
             if ($this->_self != basename($filepath)) {
               $this->_files[] = $filepath;
             }
@@ -399,13 +463,13 @@ class shellDetector {
    */
   static public function error_handler($errno, $errstr, $errfile, $errline) {
     switch ($errno) {
+			case E_USER_WARNING:
       case E_USER_ERROR :
-
       case E_USER_NOTICE :
-        $this->output('<strong>' . $this->t('Error: ') . '</strong>' . $errstr, 'error');
+			default:
+        shellDetector::output('<strong>Error: </strong>' . $errstr.' line: '.$errline, 'error');
         break;
     }
   }
-
 }
 ?>

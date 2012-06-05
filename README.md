@@ -10,7 +10,7 @@ Web Shell Detector sponsored by http://www.websecure.co.il
 Detection
 ---------
 
-  Number of known shells: 253
+  Number of known shells: 286
 
 Requirements
 ------------
@@ -53,6 +53,8 @@ Options
 
 Changelog
 ---------
+ - 1.5 unpack function added, application version check added, many warnings fixed, error handler fixed.
+ 
  - 1.4 hide suspicious files option added, file scanning changed.
 
  - 1.3 submission of suspicious file to websecure.co.il changed, email field added with ability to get notify about suspicious file.
