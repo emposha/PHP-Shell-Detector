@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.5
+ * Web Shell Detector v1.5.1
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -39,7 +39,7 @@ class shellDetector {
   private $_badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: hold shells singnatures
   private $_title = 'Web Shell Detector'; //system: title
-  private $_version = '1.5'; //system: version of shell detector
+  private $_version = '1.5.1'; //system: version of shell detector
   private $_regex = '%(preg_replace.*\/e|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
   private $_self = '';
@@ -257,7 +257,7 @@ class shellDetector {
   }
 
 	/**
-	 * Unpacking function, main idea taken from http://www.tareeinternet.com/forum/knowledgebase/274-decoding-eval-gzinflate-base64_decode.html
+	 * Unpacking function, main idea taken from http://www.tareeinternet.com/
 	 */
 	private function unpack($file, $content, $base64_content) {
 		if ($flag = $this->fingerprint($file, $base64_content)) {
@@ -265,11 +265,26 @@ class shellDetector {
 		} else {
 			$counter = 0;
 			$encoded_content = preg_replace("/<\?php|\?>|<\?/", "", $content);
+			$temp = array();
 			if (preg_match("/(\beval\b\(gzinflate|\beval\b\(base64_decode)/", $encoded_content)) {
 				while (preg_match("/\beval\((gzinflate|base64_decode)\((.*?)\);/", $encoded_content, $matches)) {
 					$encoded_content = preg_replace("/<\?php|\?>|<\?|eval/", "", $encoded_content);
-					if (isset($matches[1]) && isset($matches[2]) && strpos($matches[2] ,'$') === false) {
-						eval("\$encoded_content = ".$matches[1].'('.$matches[2].";");
+					$temp = $matches;
+					if (isset($matches[1]) && isset($matches[2]) && strpos($matches[2], '$') === false) {
+						eval("\$encoded_content = " . $matches[1] . '(' . $matches[2] . ";");
+					} else if (isset($matches[1]) && isset($matches[2]) && strpos($matches[2], '$') !== false) {
+						preg_match('/\$(.*?)\)/', $matches[2], $variable);
+						if (isset($variable[1])) {
+							preg_match('/\$' . $variable[1] . '=(.*?);/', $content, $content_match);
+							if (isset($content_match[1])) {
+								$content_temp = $matches[1] . '(' . str_replace('$' . $variable[1], $content_match[1], $matches[2]);
+								eval("\$encoded_content = " . $content_temp.";");
+							} else {
+								$encoded_content = '';
+							}
+						} else {
+							$encoded_content = '';
+						}
 					} else {
 						$encoded_content = '';
 					}
@@ -284,7 +299,7 @@ class shellDetector {
 					$encoded_content = preg_replace("/<\?php|\?>|<\?/", "", $encoded_content);
 					preg_replace("/preg_replace\((.*?)\/e(.*)\);/", "", $encoded_content);
 					if (isset($matches[1]) && isset($matches[2])) {
-						eval("\$encoded_content = preg_replace(".$matches[1].'/'.$matches[2].');');
+						eval("\$encoded_content = preg_replace(" . $matches[1].'/' . $matches[2] . ');');
 					}
 					if ($counter > 20) {
 						//protect from looping
