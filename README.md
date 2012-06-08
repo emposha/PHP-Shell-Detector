@@ -53,7 +53,7 @@ Options
 
 Changelog
 ---------
- - 1.5.1 unpack function update
+ - 1.51 unpack function update
  
  - 1.5 unpack function added, application version check added, many warnings fixed, error handler fixed.
  

@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.5.1
+ * Web Shell Detector v1.51
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -39,7 +39,7 @@ class shellDetector {
   private $_badfiles = array(); //system variable hold bad files
   private $fingerprints = array(); //system: hold shells singnatures
   private $_title = 'Web Shell Detector'; //system: title
-  private $_version = '1.5.1'; //system: version of shell detector
+  private $_version = '1.51'; //system: version of shell detector
   private $_regex = '%(preg_replace.*\/e|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%'; //system: regex for detect Suspicious behavior
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo='; //system: public key to encrypt file content
   private $_self = '';
