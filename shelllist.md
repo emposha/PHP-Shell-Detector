@@ -1,6 +1,76 @@
 Shell List
 ==========
 
+11/06/2012
+==========
+ - spam_trustapp_pages
+ - shell_uploader_curl_002
+ - shell_uploader_curl_003
+ - shell_uploader_curl_001
+ - FaTaLisTiCz_Fx Fx29SheLL
+
+06/06/2012
+==========
+ - cocacola_shell_unpacked
+ - cocacola_shell
+ - shell_uploader_curl
+ - r57_stan
+ - shell_uploader
+ - cristercorp_infocollector_001
+ - php_executer
+ - spam_trustapp
+ - joomla_spam_002
+ - r57shell
+ - cyb3r_sh3ll
+ - locusshell_001
+ - hostdevil_pl_shell
+ - cristercorp_infocollector
+ - joomla_spam_001
+ - joomla_spam
+ - pBot.php
+ - c99_hostdevil
+ - ClearShell.php
+ - NOGROD_pBot.php
+ - FaTaLisTiCz_Fx Fx29SheLL.php
+ - gohack_powerserver.php
+ - al-marhum_exploit.php
+ - al-marhum.php
+ - zorro_uploader
+ - zorro.pl
+ - empo.php
+ - hostdevil_c99.php
+ - akatsuki.php
+ - postman_full_3.5
+ - scanner_jatimcrew.pl
+ - mildnet_community_2009
+ - wso_2_1_001
+ - stunshell
+ - shellbot.pl_001
+ - hostdevil_c99
+ - wso_2_4
+ - PHPRemoteView-001
+ - arab_black_hat_pl_unpacked
+ - arab_black_hat_pl
+ - kinG511pl
+ - us3rspl
+ - max_hacker_cpanel
+ - hackerps_cpanel
+ - hackerps_shell
+ - ironshell-003
+ - PhpConfigSpy
+ - c99madShell
+ - egy_spider-001
+ - cpanel_cracker
+ - insomnia_aspx
+ - qReyFuRt_aspx
+ - tdshell
+ - erne-001
+ - smart_shell_asp
+ - ironshell-002
+ - sro_shell
+ - b374k_mini
+ - b374k
+
 24/03/2012
 ==========
  - c99shell_xpsh_v_0_4_encrypted_2
