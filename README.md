@@ -18,7 +18,7 @@ Detection
 
 Requirements
 ------------
-PHP 5.x, OpenSSL ()
+PHP 5.x, OpenSSL (only for secure file submission)
 
 Usage
 -----
