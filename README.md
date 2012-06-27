@@ -7,14 +7,18 @@ Web Shell Detector is released under the MIT License <http://www.opensource.org/
 Web Shell Detector sponsored by http://www.websecure.co.il
 
 
+Contributors
+------------
+Piotr Łuczko
+
 Detection
 ---------
 
-  Number of known shells: 296
+  Number of known shells: 297
 
 Requirements
 ------------
-PHP 5.x, OpenSSL
+PHP 5.x, OpenSSL ()
 
 Usage
 -----
@@ -53,6 +57,8 @@ Options
 
 Changelog
 ---------
+ - 1.52 noindex meta tag added (to remove script from search results), scann all files options added: extension = *
+
  - 1.51 unpack function update
  
  - 1.5 unpack function added, application version check added, many warnings fixed, error handler fixed.
