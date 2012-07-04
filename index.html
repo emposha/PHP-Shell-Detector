@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Web Shell Detector by emposha</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/emposha/PHP-Shell-Detector">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/emposha/PHP-Shell-Detector/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/emposha/PHP-Shell-Detector/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Web Shell Detector</h1>
+          <p>Web Shell Detector – is a php script that helps you find and identify php/cgi(perl)/asp/aspx shells. Web Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/emposha">emposha</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>Web Shell Detector</h1>
+
+<p><img src="http://www.emposha.com/wp-content/uploads/2011/07/shelldetect3-300x201.png" width="100" align="left"> Web Shell Detector – is a php script that helps you find and identify php/cgi(perl)/asp/aspx shells. Web Shell Detector has a “web shells” signature database that helps to identify “web shell” up to 99%. By using the latest javascript and css technologies, web shell detector has a light weight and friendly interface.</p>
+
+<p>Web Shell Detector is released under the MIT License <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a></p>
+
+<p>Web Shell Detector sponsored by <a href="http://www.websecure.co.il">http://www.websecure.co.il</a></p>
+
+<h2>Contributors</h2>
+
+<p>Piotr Łuczko</p>
+
+<h2>Detection</h2>
+
+<p>Number of known shells: 297</p>
+
+<h2>Requirements</h2>
+
+<p>PHP 5.x, OpenSSL (only for secure file submission)</p>
+
+<h2>Usage</h2>
+
+<p>To activate Web Shell Detector:</p>
+
+<p>1) Upload shelldetect.php and shelldetect.db to your root directory</p>
+
+<p>2) Open shelldetect.php file in your browser</p>
+
+<pre><code>Example: http://www.website.com/shelldetect.php
+</code></pre>
+
+<p>3) Inspect all strange files, if some of files look suspicious, send them to <a href="http://www.websecure.co.il">http://www.websecure.co.il</a> team. After submitting your file, it will be inspected and if there are any threats, it will be inserted into a “web shell detector” web shells signature database.</p>
+
+<p>4) If any web shells found and identified use your ftp/ssh client to remove it from your web server (IMPORTANT: please be carefull because some of shells may be integrated into system files!).</p>
+
+<h2>Demo</h2>
+
+<pre><code>http://www.emposha.com/demo/shelldetect/
+</code></pre>
+
+<h2>Options</h2>
+
+<ul>
+<li>extension - extensions that should be scanned</li>
+<li>showlinenumbers - show line number where suspicious function used</li>
+<li>dateformat - used with access time &amp; modified time</li>
+<li>langauge - if I want to use other language</li>
+<li>directory - scan specific directory</li>
+<li>task - perform different task</li>
+<li>report_format - used with is_cron(true) file format for report file</li>
+<li>is_cron - if true run like a cron(no output)</li>
+<li>filelimit - maximum files to scan (more then 30000 you should scan specific directory)</li>
+<li>useget - activate _GET variable for easy way to recive tasks</li>
+<li>authentication  - protect script with user &amp; password in case to disable simply set to NULL</li>
+<li>remotefingerprint - get shells signatures db by remote</li>
+</ul><h2>Changelog</h2>
+
+<ul>
+<li><p>1.52 noindex meta tag added (to remove script from search results), scann all files options added: extension = *</p></li>
+<li><p>1.51 unpack function update</p></li>
+<li><p>1.5 unpack function added, application version check added, many warnings fixed, error handler fixed.</p></li>
+<li><p>1.4 hide suspicious files option added, file scanning changed.</p></li>
+<li><p>1.3 submission of suspicious file to websecure.co.il changed, email field added with ability to get notify about suspicious file.</p></li>
+<li><p>1.2 encryption function added, authentication added, some small bugs fixed</p></li>
+<li><p>1.1 fingerprint function change
+   show line regex changed</p></li>
+<li><p>1.0 first version</p></li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
