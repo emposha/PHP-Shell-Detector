@@ -14,7 +14,7 @@ set_error_handler( array("shellDetector", "error_handler"));
 // set the default timezone to use.
 date_default_timezone_set('GMT');
 
-$shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => false, 'authentication' => null));
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => false, 'authentication' => null, 'langauge' => '');
 $shelldetector->start();
 
 class shellDetector {
@@ -62,7 +62,7 @@ class shellDetector {
       if ((!isset($_SERVER['PHP_AUTH_USER']) || (isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] != $this->authentication['username'])) || (!isset($_SERVER['PHP_AUTH_PW']) ||(isset($_SERVER['PHP_AUTH_PW']) && $_SERVER['PHP_AUTH_PW'] != $this->authentication['password']))) {
         header('WWW-Authenticate: Basic realm="Login"');
         header('HTTP/1.0 401 Unauthorized');
-        echo 'Please login to continue.';
+        echo $this->t('Please login to continue.');
         exit;
       }
     }
@@ -489,7 +489,7 @@ class shellDetector {
       case E_USER_ERROR :
       case E_USER_NOTICE :
 			default:
-        shellDetector::output('<strong>Error: </strong>' . $errstr.' line: '.$errline, 'error');
+        shellDetector::output($this->t('<strong>Error: </strong>') . $errstr. $this->t(' line: ').$errline, 'error');
         break;
     }
   }
