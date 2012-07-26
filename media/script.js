@@ -1,5 +1,6 @@
 function init() {
-  $("dt").click(function() {
+	$("#loader").hide();
+  $("dt").live('click', function() {
     var text = $(this).children(".plus");
     if (text.length) {
       $(this).next("dd").slideToggle();
@@ -11,12 +12,12 @@ function init() {
       }
     }
   });
-  $(".showline").click(function() {
+  $(".showline").live('click', function() {
     var id = "li"+$(this).attr("id");
     $( "#"+ id).dialog({height: 440,modal: true, width: 600, title: "Source code"});
     return false;
   });
-  $(".source_submit").click(function() {
+  $(".source_submit").live('click', function() {
     var id = "for" + $(this).attr("id");
     $("#wrap" + id).dialog({
       autoOpen: false,
