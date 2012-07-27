@@ -14,7 +14,7 @@ set_error_handler( array("shellDetector", "error_handler"));
 // set the default timezone to use.
 date_default_timezone_set('GMT');
 
-$shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => false, 'authentication' => null, 'langauge' => '');
+$shelldetector = new shellDetector(array('extension' => array('php', 'txt'), 'hidesuspicious' => false, 'authentication' => null, 'langauge' => ''));
 $shelldetector->start();
 
 class shellDetector {
