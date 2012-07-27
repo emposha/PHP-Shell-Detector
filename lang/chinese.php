@@ -19,6 +19,7 @@
   $local['Show sha for file:'] = '显示文件的 sha 值：';
   $local['Full path:'] = '完整路径：';
   $local['Sha1:'] = 'Sha1：';
+  $local['please note it`s a malicious file not a shell'] = '请注意：它是一个恶意文件，不是 shell。';
   $local['Fingerprint:'] = '指纹：';
   $local['Positive, it`s a '] = '实际上，它是一个 ';
   $local['Owner:'] = '所有者：';
@@ -37,6 +38,7 @@
   $local['(in case you want to be notified):'] = '(如果你想获得通知)：';
   $local['Suspicious behavior found in:'] = '发现可疑行为于：';
   $local['MD5 hash:'] = 'MD5 哈希值：';
+  $local['Please wait'] = '请稍候...';
   $local['<strong>Error: </strong>'] = '<strong>错误：</strong>';
   $local[' line: '] = '行号：';
   //$local[''] = '';
