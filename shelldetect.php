@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.51
+ * Web Shell Detector v1.6
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
