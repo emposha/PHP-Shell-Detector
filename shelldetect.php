@@ -500,7 +500,7 @@ class shellDetector {
       case E_USER_ERROR :
       case E_USER_NOTICE :
 			default:
-        shellDetector::output($this->t('<strong>Error: </strong>') . $errstr. $this->t(' line: ').$errline, 'error');
+        shellDetector::output('<strong>Error: </strong>' . $errstr. ' line: ' . $errline, 'error');
         break;
     }
   }
