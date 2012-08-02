@@ -1,10 +1,6 @@
 <?php
 /**
-<<<<<<< HEAD
- * Web Shell Detector v1.6
-=======
  * Web Shell Detector v1.61
->>>>>>> version 1.61 update
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -589,21 +585,5 @@ class shellDetector {
 		}
 	}
 
-<<<<<<< HEAD
-  /**
-   * Own error handler
-   */
-  static public function error_handler($errno, $errstr, $errfile, $errline) {
-    switch ($errno) {
-			case E_USER_WARNING:
-      case E_USER_ERROR :
-      case E_USER_NOTICE :
-			default:
-        shellDetector::output('<strong>Error: </strong>' . $errstr. ' line: ' . $errline, 'error');
-        break;
-    }
-  }
-=======
->>>>>>> version 1.61 update
 }
 ?>
