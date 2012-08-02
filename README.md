@@ -14,7 +14,7 @@ Piotr Łuczko
 Detection
 ---------
 
-  Number of known shells: 340
+  Number of known shells: 343
 
 Requirements
 ------------
@@ -57,6 +57,8 @@ Options
 
 Changelog
 ---------
+ - 1.61 added new way to send suspicious files, some css & code fixes, new shells signatures added
+ 
  - 1.6 added support to indicate not shell files (but still those files need  to be removed), loader indicator added
  
  - 1.52 noindex meta tag added (to remove script from search results), scann all files options added: extension = *
