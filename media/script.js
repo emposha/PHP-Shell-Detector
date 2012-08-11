@@ -27,7 +27,7 @@ function init() {
       resizable: false,
       title: "File submission",
       buttons: {
-        "Submit file": function() {
+        "Submit file to Websecure": function() {
           if ($(".ui-dialog-content form").length) {
             $("#i"+id).removeClass("hidden");
             $("#"+id).submit();
@@ -35,6 +35,9 @@ function init() {
           } else {
             alert("This file already submited");
           }
+        },
+        "Submit file to Virustotal": function () {
+          alert(1);
         }
       }
     });
