@@ -273,7 +273,7 @@ class shellDetector {
               break;
             case 2:
               $shellcolor = 'orange';
-              $shellflag .= ' ' . $this->t('please note potentially dangerous file (legit file but sometimes may be used by hackers)');
+              $shellflag .= ' ' . $this->t('please note potentially dangerous file (legit file but may be used by hackers)');
               break;
           }
         }
