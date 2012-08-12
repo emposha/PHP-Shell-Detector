@@ -178,6 +178,15 @@ class shellDetector {
    */
   private function version() {
     $context = stream_context_create(array('http' => array('timeout' => 10, 'header' => 'Connection: close')));
+    //check application version
+    $app_version = floatval($this->_version);
+    $server_version = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/version/app', 0, $context);
+    if (strlen($server_version) != 0 && floatval($server_version) != 0 && (floatval($server_version) > $app_version)) {
+      $this->output($this->t('New version of application found. Please update!'), 'error');
+    } else if (strlen($server_version) == 0 || intval($server_version) == 0) {
+      $this->output($this->t('Cant connect to server! Application version check failed!'), 'error');
+    }
+    
     $version = isset($this->fingerprints['version']) ? $this->fingerprints['version'] : 0;
     $server_version = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/version/db', 0, $context);
     if (strlen($server_version) != 0 && intval($server_version) != 0 && (intval($server_version) > intval($version))) {
@@ -185,15 +194,6 @@ class shellDetector {
       return true;
     } else if (strlen($server_version) == 0 || intval($server_version) == 0) {
       $this->output($this->t('Cant connect to server! Version check failed!'), 'error');
-    }
-    //check application version
-    $app_version = floatval($this->_version);
-    $server_version = file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/version/app', 0, $context);
-    if (strlen($server_version) != 0 && floatval($server_version) != 0 && (floatval($server_version) > $app_version)) {
-      $this->output($this->t('New version of application found. Please update!'), 'error');
-      return true;
-    } else if (strlen($server_version) == 0 || intval($server_version) == 0) {
-      $this->output($this->t('Cant connect to server! Application version check failed!'), 'error');
     }
     return false;
   }
