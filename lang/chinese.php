@@ -4,10 +4,10 @@
   $local['Shells signature database updated succesfully!'] = 'Shell 签名数据库更新成功！';
   $local['Cant save shells signature database please check permissions'] = '不能保存 shell 签名数据库，请检查权限。';
   $local['Your shells signatures database already updated!'] = '您的 shell 签名数据库已经更新！';
-  $local['New version of shells signature database found. Please update!'] = '发现新版本的 shell 签名数据库。请更新！';
-  $local['Cant connect to server! Version check failed!'] = '无法连接到服务器！版本检查失败！';
   $local['New version of application found. Please update!'] = '发现新版本的程序。请更新！';
   $local['Cant connect to server! Application version check failed!'] = '无法连接到服务器！程序版本检查失败！';
+  $local['New version of shells signature database found. Please update!'] = '发现新版本的 shell 签名数据库。请更新！';
+  $local['Cant connect to server! Version check failed!'] = '无法连接到服务器！版本检查失败！';
   $local['You code submited. Thank you.'] = '您的代码已提交。非常感谢。';
   $local['Cant find selected file.'] = '未找到选择的文件。';
   $local['No file specified.'] = '未指定文件。';
@@ -21,6 +21,7 @@
   $local['Full path:'] = '完整路径：';
   $local['Sha1:'] = 'Sha1：';
   $local['please note it`s a malicious file not a shell'] = '请注意：它是一个恶意文件，不是 shell。';
+  $local['please note potentially dangerous file (legit file but may be used by hackers)'] = '请注意潜在的危险文件（合法的文件，但可能被黑客利用）';
   $local['Fingerprint:'] = '指纹：';
   $local['Positive, it`s a '] = '实际上，它是一个 ';
   $local['suspicious functions used:'] = '使用的可疑函数：';
