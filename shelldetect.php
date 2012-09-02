@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.62
+ * Web Shell Detector v1.63
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -79,10 +79,10 @@ class shellDetector {
   private $_title = 'Web Shell Detector';
 
   //system: version of shell detector
-  private $_version = '1.62';
+  private $_version = '1.63';
 
   //system: regex for detect Suspicious behavior
-  private $_regex = '%(preg_replace.*\/e|`.*?\$.*?`|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\bedoced_46esab\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%';
+  private $_regex = '%(preg_replace.*\/e|`.*?\$.*?`|\bcreate_function\b|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\bedoced_46esab\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%';
 
   //system: public key to encrypt file content
   private $_public_key = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRDZCNWZaY2NRN2dROS93TitsWWdONUViVU4NClNwK0ZaWjcyR0QvemFrNEtDWkZISEwzOHBYaS96bVFBU1hNNHZEQXJjYllTMUpodERSeTFGVGhNb2dOdzVKck8NClA1VGprL2xDcklJUzVONWVhYUQvK1NLRnFYWXJ4bWpMVVhmb3JIZ25rYUIxQzh4dFdHQXJZWWZWN2lCVm1mRGMNCnJXY3hnbGNXQzEwU241ZDRhd0lEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo=';
@@ -357,7 +357,9 @@ class shellDetector {
    * Unpacking function, main idea taken from http://www.tareeinternet.com/
    */
   private function unpack($file, $content, $base64_content) {
-    if ($flag = $this->fingerprint($file, $base64_content)) {
+    if ($flag = ($this->fingerprint($file, $base64_content)) ) {
+      return $flag;
+    } elseif ($flag = ($this->fingerprint($file, $content))) {
       return $flag;
     } else {
       $counter = 0;
@@ -423,6 +425,9 @@ class shellDetector {
   private function fingerprint($file, $content = null) {
     $key = false;
     foreach ($this->fingerprints as $fingerprint => $shell) {
+      if (strpos($fingerprint, 'bb:') !== false) {
+        $fingerprint = base64_decode(str_replace('bb:', '', $fingerprint));
+      }
       if (preg_match("/" . preg_quote($fingerprint, '/') . "/", $content)) {
         $key = $shell;
         $this->_badfiles[] = $file;

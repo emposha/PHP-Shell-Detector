@@ -14,7 +14,7 @@ Piotr Łuczko
 Detection
 ---------
 
-  Number of known shells: 417
+  Number of known shells: 425
 
 Requirements
 ------------
@@ -57,6 +57,8 @@ Options
 
 Changelog
 ---------
+ - 1.63 new shell recognize mechanizm added, shell signatures updated.
+ 
  - 1.62 version of jquery reverted to 1.7.x due bug with jquery ui dialog, new type of files added, shells signatures updated
  
  - 1.61 added new way to send suspicious files, some css & code fixes, new shells signatures added
