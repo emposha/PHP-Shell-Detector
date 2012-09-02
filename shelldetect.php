@@ -313,6 +313,7 @@ class shellDetector {
    * Prepare file submit function
    */
   private function fileprepare($file, $base64_content) {
+    $filtered_file = filter_var($file, FILTER_SANITIZE_SPECIAL_CHARS);
     $key = $this->t('Negative') . ' <small class="source_submit_parent">(' . $this->t('if wrong') . ' <a href="#" id="m_' . md5($file) . '" class="source_submit">' . $this->t('submit file for analize') . '</a>)</small>';
     $key .= '<div id="wrapform_' . md5($file) . '" class="hidden"><iframe border="0" scrolling="no" class="hidden" id="iform_' . md5($file) . '" name="iform_' . md5($file) . '" src="http://www.websecure.co.il/phpshelldetector/api/loader.html" />"></iframe>';
     if ($this->submitfile == 0) {
@@ -320,7 +321,7 @@ class shellDetector {
     } else {
       $key .= '<form id="form_' . md5($file) . '" target="iform_' . md5($file) . '" action="?task=sendfile" method="post">';
     }
-    $key .= '<dl><dt>' . $this->t('Submit file') . ' ' . $file . '</dt><dd>';
+    $key .= '<dl><dt>' . $this->t('Submit file') . ' ' . $filtered_file . '</dt><dd>';
     $key .= '<dl><dt class="submit_email">' . $this->t('Your email') . '<br /><span class="small">' . $this->t('(in case you want to be notified):') . '</span></dt><dd class="submit_email_field"><input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" /></dd></dl></dd></dl>';
 
     if ($this->submitfile == 0) {
@@ -343,8 +344,9 @@ class shellDetector {
    * Show file information
    */
   private function fileInfo($file, $base64_content) {
-    $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($file) . '<span class="plus">-</span></dt>', null, false);
-    $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $file . '</dd>', null, false);
+    $filtered_file = filter_var($file, FILTER_SANITIZE_SPECIAL_CHARS);
+    $this->output('<dl><dt>' . $this->t('Suspicious behavior found in:') . ' ' . basename($filtered_file) . '<span class="plus">-</span></dt>', null, false);
+    $this->output('<dd><dl><dt>' . $this->t('Full path:') . '</dt><dd>' . $filtered_file . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Owner:') . '</dt><dd>' . fileowner($file) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Permission:') . '</dt><dd>' . substr(sprintf('%o', fileperms($file)), -4) . '</dd>', null, false);
     $this->output('<dt>' . $this->t('Last accessed:') . '</dt><dd>' . date($this->dateformat, fileatime($file)) . '</dd>', null, false);
