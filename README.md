@@ -14,7 +14,7 @@ Piotr Łuczko
 Detection
 ---------
 
-  Number of known shells: 425
+  Number of known shells: 427
 
 Requirements
 ------------
@@ -57,6 +57,9 @@ Options
 
 Changelog
 ---------
+ 
+ - 1.64 settings ini file support added(in case that you want to use same settings without code changing), output method rewriten, is_cron fixed, italian translation added (thanks to Marco Saiu)
+ 
  - 1.63 new shell recognize mechanizm added, shell signatures updated.
  
  - 1.62 version of jquery reverted to 1.7.x due bug with jquery ui dialog, new type of files added, shells signatures updated
