@@ -11,7 +11,7 @@
   $local['You code submited. Thank you.'] = 'Il codice &egrave; stato inviato. Grazie.';
   $local['Cant find selected file.'] = 'Non &egrave; stato trovato il file selezionato';
   $local['No file specified.'] = 'Nessun file speficiato';
-  $local['Starting file scanner, please be patient file scanning can take some time.'] = 'Avvio dell\'analisi dei file, si prega di attendere la scansione può richiedere diverso tempo.';
+  $local['Starting file scanner, please be patient file scanning can take some time.'] = 'Avvio dell\'analisi dei file, si prega di attendere la scansione puÃ² richiedere diverso tempo.';
   $local['Number of known shells in database is: '] = 'Numero di shell conosciute nel database: ';
   $local['Files found:'] = 'File trovati:';
   $local['File limit reached, scanning process stopped.'] = 'Il limite dei file &egrave; stato raggiunto, la scansione &egrave stata interrota.';
@@ -26,7 +26,7 @@
   $local['Positive, it`s a '] = 'Positivo, &egrave; una ';
   $local['suspicious functions used:'] = 'Funzione sospetta:';
   $local['line:'] = 'linea:';
-  $local['<strong>Status</strong>: @count suspicious files found and @shells shells found'] = '<strong>??</strong>:??? @count ??????? @shells ? shell';
+  $local['<strong>Status</strong>: @count suspicious files found and @shells shells found'] = '<strong>Stato</strong>: Trovati @count file sospetti e @shells shell';
   $local['Negative'] = 'Negativo';
   $local['if wrong'] = 'se sbagliato';
   $local['submit file for analize'] = 'Invia file per l\'analisi';
