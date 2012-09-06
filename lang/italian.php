@@ -6,12 +6,16 @@
   $local['Your shells signatures database already updated!'] = 'Il database delle shell &egrave; gi&agrave; aggiornato!';
   $local['New version of application found. Please update!'] = '&Egrave; stata trovata una nuova versione dell\'applicazione. Perfavore procedi con l\'aggiornamento!';
   $local['Cant connect to server! Application version check failed!'] = 'Non &egrave; possibile connettersi al server! Il controllo della versione &egrave; fallito!';
-  $local['New version of shells signature database found. Please update!'] = '&Egrave; stata trovata una nuova versione del database. Perfavore procedi con l\'aggiornamento!';
+  $local['New version of shells signature database found. Please update!'] = '&Egrave; stata trovata una nuova versione del database. Perfavore procedi con l
+
+\'aggiornamento!';
   $local['Cant connect to server! Version check failed!'] = 'Non &egrave; possibile connettersi al server! Il controllo della versione &egrave; fallitto!';
   $local['You code submited. Thank you.'] = 'Il codice &egrave; stato inviato. Grazie.';
   $local['Cant find selected file.'] = 'Non &egrave; stato trovato il file selezionato';
   $local['No file specified.'] = 'Nessun file speficiato';
-  $local['Starting file scanner, please be patient file scanning can take some time.'] = 'Avvio dell\'analisi dei file, si prega di attendere la scansione può richiedere diverso tempo.';
+  $local['Starting file scanner, please be patient file scanning can take some time.'] = 'Avvio dell\'analisi dei file, si prega di attendere la scansione pu&ograve; 
+
+richiedere diverso tempo.';
   $local['Number of known shells in database is: '] = 'Numero di shell conosciute nel database: ';
   $local['Files found:'] = 'File trovati:';
   $local['File limit reached, scanning process stopped.'] = 'Il limite dei file &egrave; stato raggiunto, la scansione &egrave stata interrota.';
@@ -21,7 +25,9 @@
   $local['Full path:'] = 'Percorso Completo:';
   $local['Sha1:'] = 'Sha1:';
   $local['please note it`s a malicious file not a shell'] = 'si prega di notare questo &egrave; un file sospetto non una shell';
-  $local['please note potentially dangerous file (legit file but may be used by hackers)'] = 'vi prego di notare questo file &egrave; potenzialmente pericoloso (file legittimo, ma pu&ograve; essere utilizzato dagli hacker)';
+  $local['please note potentially dangerous file (legit file but may be used by hackers)'] = 'vi prego di notare questo file &egrave; potenzialmente pericoloso (file 
+
+legittimo, ma pu&ograve; essere utilizzato dagli hacker)';
   $local['Fingerprint:'] = 'Impronta:';
   $local['Positive, it`s a '] = 'Positivo, &egrave; una ';
   $local['suspicious functions used:'] = 'Funzione sospetta:';
