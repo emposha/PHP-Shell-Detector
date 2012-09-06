@@ -34,6 +34,8 @@
   $local['Your email'] = '您的 Email';
   $local['(in case you want to be notified):'] = '(如果你想获得通知)：';
   $local['Suspicious behavior found in:'] = '发现可疑行为于：';
+  $local['Please note: file have different owner'] = '请注意：文件属于不同的所有者';
+  $local['Please note: file have full access permissions'] = '请注意：文件具有完全访问权限';
   $local['Owner:'] = '所有者：';
   $local['Permission:'] = '权限：';
   $local['Last accessed:'] = '最后访问时间：';
@@ -41,6 +43,8 @@
   $local['MD5 hash:'] = 'MD5 哈希值：';
   $local['Filesize:'] = '文件大小：';
   $local['Please wait'] = '请稍候...';
+  $local['Done, report file created'] = '完成，报告文件已创建';
+  $local['Error, report file creation failed'] = '错误，报告文件创建失败';
   $local['<strong>Error: </strong>'] = '<strong>错误：</strong>';
   $local[' line: '] = '行号：';
 ?>
