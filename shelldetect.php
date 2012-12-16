@@ -36,7 +36,7 @@ class shellDetector {
   private $dateformat = "H:i:s d/m/Y";
 
   //settings: if I want to use other language
-  private $langauge = '';
+  private $language = '';
 
   //settings: scan specific directory
   private $directory = '.';
@@ -536,9 +536,9 @@ class shellDetector {
    * Translate function (ported from Drupal)
    */
   private function t($string, $args = array()) {
-    if ($this->langauge) {
-      if (is_file('lang/' . $this->langauge . '.php')) {
-        include ('lang/' . $this->langauge . '.php');
+    if ($this->language) {
+      if (is_file('lang/' . $this->language . '.php')) {
+        include ('lang/' . $this->language . '.php');
         if (isset($local[$string])) {
           $string = $local[$string];
         }
