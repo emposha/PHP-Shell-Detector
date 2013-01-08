@@ -5,7 +5,7 @@
   $local['Cant save shells signature database please check permissions'] = 'Não foi possível salvar a nova versão da sua base de assinaturas. Verifique as permissões.';
   $local['Your shells signatures database already updated!'] = 'A sua base de assinaturas já está na última versão!';
   $local['New version of application found. Please update!'] = 'Nova versão da aplicação foi encontrada. Favor atualizar !';
-  $local['Cant connect to server! Application version check failed!'] = 'Impossible de se connecter au serveur, la vérification de version de l\'application a échouée.';
+  $local['Cant connect to server! Application version check failed!'] = 'Impossível se conectar ao servidor ! A checagem de versão do aplicativo falhou !';
   $local['New version of shells signature database found. Please update!'] = 'Nova versão da base de assinaturas foi encontrada. Por favor atualize !';
   $local['Cant connect to server! Version check failed!'] = 'Impossível se conectar ao servidor ! A verificação de versão falhou!';
   $local['You code submited. Thank you.'] = 'Seu código foi enviado. Obrigado. ';
@@ -23,7 +23,7 @@
   $local['please note it`s a malicious file not a shell'] = 'Notez qu\'il s\'agit d\'un fichier malicieux, mais pas un shell.';
   $local['please note potentially dangerous file (legit file but may be used by hackers)'] = 'Notez qu\'il s\'agit d\'un fichier potentiellement dangereux (légitime mais pouvant être utilisé par des pirates)';
   $local['Fingerprint:'] = 'Fingerprint :';
-  $local['Positive, it`s a '] = 'Positif, c\'est un ';
+  $local['Positive, it`s a '] = 'Positivo, isto é ';
   $local['suspicious functions used:'] = 'Funções suspeitas :';
   $local['line:'] = 'linha :';
   $local['<strong>Status</strong>: @count suspicious files found and @shells shells found'] = '<strong>Statut</strong>: @count fichiers suspicieux trouvés et @shells shells trouvés';
