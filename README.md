@@ -14,7 +14,7 @@ Piotr Łuczko
 Detection
 ---------
 
-  Number of known shells: 470
+  Number of known shells: 462
 
 Requirements
 ------------
@@ -57,8 +57,6 @@ Options
 
 Changelog
 ---------
-
- - 1.65 new api url replaced, status url provided by new api
  
  - 1.64 settings ini file support added(in case that you want to use same settings without code changing), output method rewriten, is_cron fixed, italian translation added (thanks to Marco Saiu)
  
