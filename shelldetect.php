@@ -340,6 +340,9 @@ class shellDetector {
               break;
           }
         }
+        if ($this->isConsole() && !$this->isBrief()) {
+          print "$file: $shellflag\n"; 
+        } 
         self::output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $shellcolor . '">' . $this->t('Positive, it`s a ') . $shellflag . '</dd></dl></dd></dl>', null, false);
       } else if ($this->hidesuspicious !== true) {
         if (preg_match_all($this->_regex, $content, $matches)) {
@@ -587,11 +590,6 @@ class shellDetector {
    */
   private function flush() {
     if ($this->isConsole()) {
-      if (!$this->isBrief()) {
-        foreach ($this->_badfiles as $file) {
-          print $file."\n";
-        }
-      } 
       print "$this->counter files, $this->suspcounter suspicious, ".count($this->_badfiles)." shells\n";
     } 
     if ($this->is_cron) {
