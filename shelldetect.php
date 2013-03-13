@@ -22,6 +22,21 @@ if (is_file('shelldetect.ini')) {
 shellDetector::$_settings = $params;
 
 $shelldetector = new shellDetector($params);
+
+if ($shelldetector->isConsole()) {
+  $options = getopt("d:hcb");
+  if (array_key_exists("d",$options)) {
+    $shelldetector->setDir($options["d"]);
+  }
+  if (array_key_exists("b",$options)) {
+    $shelldetector->setBrief(true);
+  }
+  if (array_key_exists("c",$options)) {
+    $shelldetector::$_settings['is_cron']=true;
+    $shelldetector->setCron(true);
+  }
+}
+
 $shelldetector->start();
 
 class shellDetector {
@@ -37,6 +52,12 @@ class shellDetector {
 
   //settings: if I want to use other language
   private $language = '';
+
+  //settings: if console used
+  private $console = false;
+
+  //settings: if brief info is needed
+  private $brief = false;
 
   //settings: scan specific directory
   private $directory = '.';
@@ -76,6 +97,10 @@ class shellDetector {
   
   //system variable used with is_cron
   static $_output = '';
+
+  // global counters
+  private $counter = 0;
+  private $suspcounter = 0;
 
   //system variable hold all scanned files
   private $_files = array();
@@ -135,6 +160,26 @@ class shellDetector {
     if ($this->remotefingerprint) {
       $this->fingerprints = unserialize(base64_decode(file_get_contents('https://raw.github.com/emposha/PHP-Shell-Detector/master/shelldetect.db')));
     }
+  }
+
+  public function setDir($dir) {
+    $this->directory = $dir;
+  }
+
+  public function setCron($val) {
+    $this->is_cron = $val;
+  }
+
+  public function setBrief($val) {
+    $this->brief = $val;
+  }
+
+  public function isBrief() {
+    return $this->brief;
+  }
+
+  public function isConsole() {
+    return $this->console;
   }
 
   /**
@@ -241,10 +286,16 @@ class shellDetector {
     self::output('<div class="info">' . $this->t('Files found:') . '<span class="filesfound">', null, false);
     $this->listdir($this->directory);
     self::output('</span></div>', null, false);
-    if (count($this->_files) > $this->filelimit) {
-      self::output($this->t('File limit reached, scanning process stopped.'));
+    if ($this->filelimit>0) {
+      if (count($this->_files) > $this->filelimit) {
+        self::output($this->t('File limit reached, scanning process stopped.'));
+      }
     }
-    self::output($this->t('File scan done, we have: @count files to analize', array("@count" => count($this->_files))));
+    if ($this->filelimit>0) {
+      self::output($this->t('File scan done, we have: @count files to analize', array("@count" => count($this->_files))));
+    } else {
+      self::output($this->t('File scan done, we have: @count files to analize', array("@count" => $this->counter)));
+    }
     if ($this->hidesuspicious) {
       self::output($this->t('Please note suspicious files information will not be displayed'), 'error');
     }
@@ -267,6 +318,7 @@ class shellDetector {
    */
   private function analyze($file) {
     $counter = 0;
+    $this->counter++;
       $content = file_get_contents($file);
       $base64_content = base64_encode($content);
       $shellflag = $this->unpack($file, $content, $base64_content);
@@ -308,11 +360,11 @@ class shellDetector {
           }
           $key = $this->fileprepare($file, $base64_content);
           self::output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="green">' . $key . '</dd></dl></dd></dl>', null, false);
-          $counter++;
+          $this->suspcounter++;
         }
       } else {
         if (preg_match_all($this->_regex, $content, $matches)) {
-          $counter++;
+          $this->suspcounter++;
         }
       }
   }
@@ -325,7 +377,7 @@ class shellDetector {
       $this->analyze($file);
     }
     self::output('', 'clearer');
-    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
+    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $this->suspcounter, "@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
   /**
@@ -493,7 +545,7 @@ class shellDetector {
    */
   private function footer() {
     self::output('</div></body></html>', null, false);
-    if ($this->is_cron) {
+    if ($this->is_cron || $this->console) {
       $this->flush();
     }
   }
@@ -511,7 +563,8 @@ class shellDetector {
    * Output
    */
   static function output($content, $class = 'info', $html = true) {
-    if (isset(self::$_settings) && isset(self::$_settings['is_cron']) && self::$_settings['is_cron']) {
+    if ((isset(self::$_settings) && isset(self::$_settings['is_cron']) && self::$_settings['is_cron']) ||
+      (isset(self::$_settings) && isset(self::$_settings['console']) && self::$_settings['console'])) {
       if ($html) {
         self::$_output .= '<div class="' . $class . '">' . $content . '</div>';
       } else {
@@ -531,11 +584,21 @@ class shellDetector {
    * Save scanned data to file
    */
   private function flush() {
-    $filename = date($this->report_format, time());
-    if (file_put_contents($filename, self::$_output)) {
-      print $this->t('Done, report file created');
-    } else {
-      print $this->t('Error, report file creation failed');
+    if ($this->isConsole()) {
+      if (!$this->isBrief()) {
+        foreach ($this->_badfiles as $file) {
+          print $file."\n";
+        }
+      } 
+      print "$this->counter files, $this->suspcounter suspicious, ".count($this->_badfiles)." shells\n";
+    } 
+    if ($this->is_cron) {
+      $filename = date($this->report_format, time());
+      if (file_put_contents($filename, self::$_output)) {
+        print $this->t('Done, report file created');
+      } else {
+        print $this->t('Error, report file creation failed');
+      }
     }
   }
 
