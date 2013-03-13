@@ -327,7 +327,7 @@ class shellDetector {
         $this->fileInfo($file, $base64_content);
         $shellcolor = 'red';
         preg_match('#(.*)\[(.*?)\]\[(.*?)\]\[(.*?)\]#', $shellflag, $shellmatch);
-        if (is_array($shellmatch)) {
+        if (is_array($shellmatch) && count($shellmatch)>0) {
           $shellflag = $shellmatch[1] . '(' . $shellmatch[4] . ')';
           switch($shellmatch[3]) {
             case 1 :
@@ -517,6 +517,8 @@ class shellDetector {
         $fingerprint = base64_decode(str_replace('bb:', '', $fingerprint));
       }
       if (preg_match("/" . preg_quote($fingerprint, '/') . "/", $content)) {
+        # [version] => 1359928984 db content FIXME?!?!?
+        if ($fingerprint == "version") break;
         $key = $shell;
         $this->_badfiles[] = $file;
         break;
