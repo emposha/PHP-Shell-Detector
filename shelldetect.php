@@ -265,9 +265,8 @@ class shellDetector {
   /**
    * Check files for using suspicious function
    */
-  private function anaylize() {
+  private function analyze($file) {
     $counter = 0;
-    foreach ($this->_files as $file) {
       $content = file_get_contents($file);
       $base64_content = base64_encode($content);
       $shellflag = $this->unpack($file, $content, $base64_content);
@@ -316,9 +315,17 @@ class shellDetector {
           $counter++;
         }
       }
+  }
+
+  /**
+   * Check files for using suspicious function
+   */
+  private function anaylize() {
+    foreach ($this->_files as $file) {
+      $this->analyze($file);
     }
     self::output('', 'clearer');
-    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $counter, "@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
+    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
   /**
@@ -564,8 +571,10 @@ class shellDetector {
    */
   private function listdir($dir) {
     $handle = opendir($dir);
-    if (count($this->_files) > $this->filelimit) {
-      return true;
+    if ($this->filelimit > 0) {
+      if (count($this->_files) > $this->filelimit) {
+        return true;
+      }
     }
     while (($file = readdir($handle)) !== false) {
       if ($file == '.' || $file == '..') {
@@ -579,11 +588,19 @@ class shellDetector {
         if (substr(basename($filepath), 0, 1) != "." || $this->scan_hidden) {
           $extension = pathinfo($filepath);
           if (is_string($this->extension) && $this->extension == '*') {
-            $this->_files[] = $filepath;
+            if ($this->filelimit > 0) {
+              $this->_files[] = $filepath;
+            } else {
+              $this->analyze($filepath);
+            }
           } else {
             if (isset($extension['extension']) && in_array($extension['extension'], $this->extension)) {
               if ($this->_self != basename($filepath)) {
+                if ($this->filelimit > 0) {
                 $this->_files[] = $filepath;
+                } else {
+                  $this->analyze($filepath);
+                }
               }
             }
           }
