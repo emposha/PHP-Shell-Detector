@@ -32,7 +32,7 @@ if ($shelldetector->isConsole()) {
     $shelldetector->setBrief(true);
   }
   if (array_key_exists("c",$options)) {
-    $shelldetector::$_settings['is_cron']=true;
+    shellDetector::$_settings['is_cron'] = true;
     $shelldetector->setCron(true);
   }
 }
