@@ -515,11 +515,20 @@ class shellDetector {
    */
   private function fingerprint($file, $content = null) {
     $key = false;
-    foreach ($this->fingerprints as $fingerprint => $shell) {
-      if (strpos($fingerprint, 'bb:') !== false) {
-        $fingerprint = base64_decode(str_replace('bb:', '', $fingerprint));
-      }
-      if (preg_match("/" . preg_quote($fingerprint, '/') . "/", $content)) {
+    
+    // pre prepare all the fingerprints on the first request for optimisation.
+    static $fingerprint_cache = array();
+    if(empty($fingerprint_cache) === true){
+        foreach ($this->fingerprints as $fingerprint => $shell){
+            if (strpos($fingerprint, 'bb:') !== false) {
+                $fingerprint = base64_decode(str_replace('bb:', '', $fingerprint));
+            }
+            $fingerprint_cache['/' . preg_quote($fingerprint, '/') . '/'] = $shell;
+        }
+    }
+    
+    foreach ($fingerprint_cache as $fingerprint => $shell) {
+      if (preg_match($fingerprint, $content)) {
         # [version] => 1359928984 db content FIXME?!?!?
         if ($fingerprint == "version") break;
         $key = $shell;
