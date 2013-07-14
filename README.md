@@ -14,7 +14,7 @@ Piotr Łuczko
 Detection
 ---------
 
-  Number of known shells: 495
+  Number of known shells: 499
 
 Requirements
 ------------
