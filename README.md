@@ -4,7 +4,7 @@ Web Shell Detector
 
 Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
-Web Shell Detector sponsored by http://www.websecure.co.il
+Console version (python): https://github.com/emposha/Shell-Detector
 
 
 Contributors
