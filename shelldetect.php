@@ -1,6 +1,6 @@
 <?php
 /**
- * Web Shell Detector v1.65
+ * Web Shell Detector v1.66
  * Web Shell Detector is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  * https://github.com/emposha/PHP-Shell-Detector
  */
@@ -115,7 +115,7 @@ class shellDetector {
   private $_title = 'Web Shell Detector';
 
   //system: version of shell detector
-  private $_version = '1.65';
+  private $_version = '1.66';
 
   //system: regex for detect Suspicious behavior
   private $_regex = '%(preg_replace.*\/e|`.*?\$.*?`|\bcreate_function\b|\bpassthru\b|\bshell_exec\b|\bexec\b|\bbase64_decode\b|\bedoced_46esab\b|\beval\b|\bsystem\b|\bproc_open\b|\bpopen\b|\bcurl_exec\b|\bcurl_multi_exec\b|\bparse_ini_file\b|\bshow_source\b)%';
@@ -151,6 +151,9 @@ class shellDetector {
     if (isset($_GET['task'])) {
       $this->task = $_GET['task'];
     }
+  if (isset($_GET['s']) && 1 == $_GET['s']) {
+    $this->hidesuspicious = false;
+  }
 
     if (file_exists('shelldetect.db')) {
       $context = stream_context_create(array('http' => array('timeout' => 30)));
@@ -323,7 +326,7 @@ class shellDetector {
       $base64_content = base64_encode($content);
       $shellflag = $this->unpack($file, $content, $base64_content);
 
-      if ($shellflag !== false) {
+      if ($shellflag != false) {
         $this->fileInfo($file, $base64_content);
         $shellcolor = 'red';
         preg_match('#(.*)\[(.*?)\]\[(.*?)\]\[(.*?)\]#', $shellflag, $shellmatch);
@@ -344,8 +347,8 @@ class shellDetector {
           print "$file: $shellflag\n"; 
         } 
         self::output('<dt>' . $this->t('Fingerprint:') . '</dt><dd class="' . $shellcolor . '">' . $this->t('Positive, it`s a ') . $shellflag . '</dd></dl></dd></dl>', null, false);
-      } else if ($this->hidesuspicious !== true) {
-        if (preg_match_all($this->_regex, $content, $matches)) {
+      } else if ($this->hidesuspicious != true) {
+     	 if (preg_match_all($this->_regex, $content, $matches)) {
           $this->fileInfo($file, $base64_content);
           if ($this->showlinenumbers) {
             self::output('<dt>' . $this->t('suspicious functions used:') . '</dt><dd>', null, false);
@@ -377,10 +380,12 @@ class shellDetector {
    */
   private function anaylize() {
     foreach ($this->_files as $file) {
-      $this->analyze($file);
+    	if (is_readable($file)) {
+      	$this->analyze($file);
+    	}  
     }
     self::output('', 'clearer');
-    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found', array("@count" => $this->suspcounter, "@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
+    self::output($this->t('<strong>Status</strong>: @count suspicious files found and @shells shells found. <a href="' . $_SERVER['PHP_SELF'] . '?s=1">Rescan and show suspicious files</a>' , array("@count" => $this->suspcounter, "@shells" => count($this->_badfiles) ? '<strong>' . count($this->_badfiles) . '</strong>' : count($this->_badfiles))), (count($this->_badfiles) ? 'error' : 'success'));
   }
 
   /**
@@ -570,7 +575,7 @@ class shellDetector {
   private function header() {
     $style = '<style type="text/css" media="all">body{background-color:#ccc;font:13px tahoma,arial;color:#151515;direction:ltr}h1{text-align:center;font-size:24px}dl{margin:0;padding:0}#content{width:1024px;margin:0 auto;padding:35px 40px;border:1px solid #e8e8e8;background:#fff;overflow:hidden;-webkit-border-radius:7px;-moz-border-radius:7px;border-radius:7px}dl dt{cursor:pointer;background:#5f9be3;color:#fff;float:left;font-weight:700;margin-right:10px;width:99%;position:relative;padding:5px}dl dt .plus{position:absolute;right:4px}dl dd{margin:2px 0;padding:5px 0}dl dd dl{margin-top:24px;margin-left:60px}dl dd dl dt{background:#4fcba3!important;width:180px!important}.error{background-color:#ffebe8;border:1px solid #dd3c10;padding:4px 10px;margin:5px 0}.success{background-color:#fff;border:1px solid #bdc7d8;padding:4px 10px;margin:5px 0}.info{background-color:#fff9d7;border:1px solid #e2c822;padding:4px 10px;margin:5px 0}.clearer{clear:both;height:0;font-size:0}.hidden{display:none}.green{font-weight:700;color:#92b901}.red{font-weight:700;color:#dd3c10}.orange{font-weight:700;color:#ff7f00}.green small{font-weight:400!important;color:#151515!important}.filesfound {position: relative}.files {position: absolute;left:4px;background-color:#FFF9D7}iframe{border:0px;height:80px;width:100%}.small{font-size: 10px;font-weight:normal;}.ui-widget-content dl dd dl {margin-left: 0px !important;}.ui-widget-content input {width: 310px;margin-top: 4px;}.submit_email {width: 190px !important;}.submit_email_field{float: left; width: 100px !important;}#loader{position:fixed;top:25%;bottom:0;left:45%;z-index:99;display:block;text-align:center;width:100%;padding-top:125px;text-align:left;font-weight:700;text-transform:uppercase;text-indent:-20px;font-size:24px;color:#5f9be3}#circularG{position:relative;width:128px;height:128px}.circularG{position:absolute;background-color:#5f9be3;width:29px;height:29px;-webkit-border-radius:19px;-moz-border-radius:19px;-webkit-animation-name:bounce_circularg;-webkit-animation-duration:1.04s;-webkit-animation-iteration-count:infinite;-webkit-animation-direction:linear;-moz-animation-name:bounce_circularg;-moz-animation-duration:1.04s;-moz-animation-iteration-count:infinite;-moz-animation-direction:linear;border-radius:19px;-o-animation-name:bounce_circularg;-o-animation-duration:1.04s;-o-animation-iteration-count:infinite;-o-animation-direction:linear;-ms-animation-name:bounce_circularg;-ms-animation-duration:1.04s;-ms-animation-iteration-count:infinite;-ms-animation-direction:linear}#circularG_1{left:0;top:50px;-webkit-animation-delay:.39s;-moz-animation-delay:.39s;-o-animation-delay:.39s;-ms-animation-delay:.39s}#circularG_2{left:14px;top:14px;-webkit-animation-delay:.52s;-moz-animation-delay:.52s;-o-animation-delay:.52s;-ms-animation-delay:.52s}#circularG_3{top:0;left:50px;-webkit-animation-delay:.65s;-moz-animation-delay:.65s;-o-animation-delay:.65s;-ms-animation-delay:.65s}#circularG_4{right:14px;top:14px;-webkit-animation-delay:.78s;-moz-animation-delay:.78s;-o-animation-delay:.78s;-ms-animation-delay:.78s}#circularG_5{right:0;top:50px;-webkit-animation-delay:.91s;-moz-animation-delay:.91s;-o-animation-delay:.91s;-ms-animation-delay:.91s}#circularG_6{right:14px;bottom:14px;-webkit-animation-delay:1.04s;-moz-animation-delay:1.04s;-o-animation-delay:1.04s;-ms-animation-delay:1.04s}#circularG_7{left:50px;bottom:0;-webkit-animation-delay:1.17s;-moz-animation-delay:1.17s;-o-animation-delay:1.17s;-ms-animation-delay:1.17s}#circularG_8{left:14px;bottom:14px;-webkit-animation-delay:1.3s;-moz-animation-delay:1.3s;-o-animation-delay:1.3s;-ms-animation-delay:1.3s}@-webkit-keyframes bounce_circularg{0%{-webkit-transform:scale(1)}100%{-webkit-transform:scale(.3)}}@-moz-keyframes bounce_circularg{0%{-moz-transform:scale(1)}100%{-moz-transform:scale(.3)}}@-o-keyframes bounce_circularg{0%{-o-transform:scale(1)}100%{-o-transform:scale(.3)}}@-ms-keyframes bounce_circularg{0%{-ms-transform:scale(1)}100%{-ms-transform:scale(.3)}}</style>';
     $script = 'function init(){$("#loader").hide();$("dt").live("click", function(){var text=$(this).children(".plus");if(text.length){$(this).next("dd").slideToggle();if(text.text()=="+"){text.text("-")}else{text.text("+")}}});$(".showline").live("click", function(){var id="li"+$(this).attr("id");$("#"+id).dialog({height:440,modal:true,width:600,title:"Source code"});return false});$(".source_submit").live("click",function(){var id="for"+$(this).attr("id");$("#wrap"+id).dialog({autoOpen:false,height:200,width:550,modal:true,resizable: false,title:"File submission",buttons: {"Submit file to analysis": function() {if ($(".ui-dialog-content form").length) {$("#i"+id).removeClass("hidden");$("#"+id).submit();$(".ui-dialog-content form").remove();} else {alert("This file already submited");}}/*,"Submit file to Virustotal": function () {alert("Not implemented");}*/}});$("#wrap"+id).dialog("open");return false})}$(document).ready(init);';
-    self::output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="robots" content="noindex"><title>Web Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . ' v' . $this->_version . '</h1><div id="loader"><div id="circularG"><div id="circularG_1" class="circularG"></div><div id="circularG_2" class="circularG"></div><div id="circularG_3" class="circularG"></div><div id="circularG_4" class="circularG"></div><div id="circularG_5" class="circularG"></div><div id="circularG_6" class="circularG"></div><div id="circularG_7" class="circularG"></div><div id="circularG_8" class="circularG"></div></div><span class="loader_text"> ' . $this->t('Please wait') . '</span></div></div><div id="content">', null, false);
+    self::output('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="robots" content="noindex"><title>Web Shell Detector</title>' . $style . '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/base/jquery-ui.css" type="text/css" media="all" /><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" charset="utf-8"></script><script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">' . $script . '</script></head><body><h1>' . $this->_title . ' v' . $this->_version . '<br />(PHP Version: ' . phpversion() .')</h1><div id="loader"><div id="circularG"><div id="circularG_1" class="circularG"></div><div id="circularG_2" class="circularG"></div><div id="circularG_3" class="circularG"></div><div id="circularG_4" class="circularG"></div><div id="circularG_5" class="circularG"></div><div id="circularG_6" class="circularG"></div><div id="circularG_7" class="circularG"></div><div id="circularG_8" class="circularG"></div></div><span class="loader_text"> ' . $this->t('Please wait') . '</span></div></div><div id="content">', null, false);
   }
 
   /**
@@ -642,7 +647,10 @@ class shellDetector {
    * Recursivly list directories
    */
   private function listdir($dir) {
-    $handle = opendir($dir);
+    if (!is_dir($dir) || !is_readable($dir)) {
+    return true;
+  }
+  $handle = opendir($dir);
     if ($this->filelimit > 0) {
       if (count($this->_files) > $this->filelimit) {
         return true;

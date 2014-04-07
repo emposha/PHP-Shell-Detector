@@ -10,6 +10,7 @@ Console version (python): https://github.com/emposha/Shell-Detector
 Contributors
 ------------
 Piotr Łuczko
+John Thornton
 
 Detection
 ---------
@@ -57,6 +58,8 @@ Options
 
 Changelog
 ---------
+
+ - 1.66 thanks to John Thornton for small tweeks and php 5.3.3 support
  
  - 1.64 settings ini file support added(in case that you want to use same settings without code changing), output method rewriten, is_cron fixed, italian translation added (thanks to Marco Saiu)
  
