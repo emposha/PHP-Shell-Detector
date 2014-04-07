@@ -151,9 +151,10 @@ class shellDetector {
     if (isset($_GET['task'])) {
       $this->task = $_GET['task'];
     }
-  if (isset($_GET['s']) && 1 == $_GET['s']) {
-    $this->hidesuspicious = false;
-  }
+
+    if (isset($_GET['s']) && 1 == $_GET['s']) {
+      $this->hidesuspicious = false;
+    }
 
     if (file_exists('shelldetect.db')) {
       $context = stream_context_create(array('http' => array('timeout' => 30)));
