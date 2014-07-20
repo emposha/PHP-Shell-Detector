@@ -16,7 +16,7 @@ John Thornton
 Detection
 ---------
 
-  Number of known shells: 551
+  Number of known shells: 604
 
 Requirements
 ------------
