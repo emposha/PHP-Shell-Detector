@@ -33,6 +33,7 @@ To activate Web Shell Detector:
     Example: http://www.website.com/shelldetect.php
 
 3) Use default username & password
+
     Username: admin
     Password: protect
 
