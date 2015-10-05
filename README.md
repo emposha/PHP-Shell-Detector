@@ -39,7 +39,7 @@ To activate Web Shell Detector:
 
 4) Inspect all strange files, if some of files look suspicious, send them to http://www.shelldetector.com team. After submitting your file, it will be inspected and if there are any threats, it will be inserted into a “web shell detector” web shells signature database.
 
-5) If any web shells found and identified use your ftp/ssh client to remove it from your web server (IMPORTANT: please be carefull because some of shells may be integrated into system files!).
+5) If any web shells found and identified use your ftp/ssh client to remove it from your web server (IMPORTANT: please be careful because some of shells may be integrated into system files!).
 
 Demo
 ----
